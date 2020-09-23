@@ -1,0 +1,11 @@
+PREFIX_DEFAULT = "PREFIX BOT"
+OWNERID    = "YOURID"
+BOTID      = "BOTID"
+TOKEN      = "TOKEN"
+MONGOURL   = "URLMONGODB"
+NEWSAPI    = "NEWSAPI"
+OMBDBKEY   = "OMBDKEY"
+SHARD      = False
+MODULES    = []
+
+from Database import database
