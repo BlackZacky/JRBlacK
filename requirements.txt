@@ -7,8 +7,5 @@ pillow
 wikipedia
 humanize
 beautifulsoup4
-wavelink
-lavalink
 git+https://github.com/Rapptz/discord-ext-menus.git
 newsapi-python
-selenium
