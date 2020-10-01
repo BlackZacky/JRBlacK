@@ -65,6 +65,7 @@ class MyOwner(commands.Cog, name="Administração"):
         self.check = database.check()
 
     @commands.command()
+    @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_permissions(manage_roles=True)
     async def mute(self, ctx, member:discord.Member=None, *, time:TimeConverter=None):
@@ -73,7 +74,7 @@ class MyOwner(commands.Cog, name="Administração"):
 
         if self.check.guild(ctx.guild.id):
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-        if MuteRole is 0:
+        if MuteRole == 0:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, este comando está desativado neste servidor.", color=0xef0027))
         if member is None:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, é necessário você está informando o usuário.", color=0xef0027))
@@ -92,7 +93,7 @@ class MyOwner(commands.Cog, name="Administração"):
             embed.add_field(name=f"{TimeI}Tempo:", value=f"```{time}```", inline=False)
             await self.client.get_channel(Logs).send(embed=embed)
 
-        if time:
+        if not time is None:
             await asyncio.sleep(time)
             await member.remove_roles(role)
             if Logs != 0:
@@ -105,6 +106,7 @@ class MyOwner(commands.Cog, name="Administração"):
                 await self.client.get_channel(Logs).send(embed=embed)
 
     @commands.command()
+    @commands.guild_only()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, members: commands.Greedy[discord.Member]=None, delete_days: typing.Optional[int]=0, *, reason:str="Motivo não informado!!"):
@@ -115,6 +117,7 @@ class MyOwner(commands.Cog, name="Administração"):
             await member.ban(delete_message_days=delete_days, reason=reason)
 
     @commands.command()
+    @commands.guild_only()
     @commands.bot_has_permissions(ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def massban(self, ctx, reason:str=None, *members:MemberID):
@@ -125,6 +128,7 @@ class MyOwner(commands.Cog, name="Administração"):
             await ctx.guild.ban(member_id, reason=reason, delete_message_days=1)
 
     @commands.command()
+    @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member:discord.Member=None, *, reason:str=None):
@@ -136,6 +140,7 @@ class MyOwner(commands.Cog, name="Administração"):
         await member.kick(reason=reason)
 
     @commands.command()
+    @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
     async def softban(self, ctx, member: discord.Member=None, *, reason:str="Não informado!!"):
@@ -146,6 +151,7 @@ class MyOwner(commands.Cog, name="Administração"):
         await ctx.guild.unban(member, reason=reason)
 
     @commands.command(aliases=['clean'], no_pm=True)
+    @commands.guild_only()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     async def limpar(self, ctx, number:int=50):

@@ -102,7 +102,7 @@ class Uptime:
 
         return string
 
-@tasks.loop(seconds=900)
+"""@tasks.loop(seconds=900)
 async def loop_covid():
     await client.wait_until_ready()
     
@@ -127,7 +127,7 @@ async def loop_covid():
     embed.add_field(name=f"{i_news}Última notícia sobre Covid-19:", value=f"```{news['title']}```[Link da notícia]({news['url']})", inline=False)
 
     message = await client.get_channel(708739143446036590).fetch_message(708742101529002015)
-    await message.edit(embed=embed)
+    await message.edit(embed=embed)"""
 
 @tasks.loop(seconds=10)
 async def loop_status():
@@ -161,7 +161,7 @@ class MyClient(commands.Cog, name="Client"):
     async def modules_start(self, modules=MODULES):
         for x in modules:
             try:
-                self.client.load_extension(x)
+                self.client.load_extension("Commands."+x)
                 print("[+] Modulo %s carregado com sucesso!" % x)
             except Exception as e:
                 print("[!] Modulo %s com erro no carregamento!" % x)
@@ -174,10 +174,9 @@ class MyClient(commands.Cog, name="Client"):
     async def on_ready(self):
         print("Logado no bot: %s(%s) \nServidores: %s \nUsuários: %s" % (self.client.user, self.client.user.id, 1, 1))
 
-        def check_isBot(member):
-            if not member.id == self.client.user.id:
-                if member.bot is False:
-                    return True
+        def check_is_bot(member):
+            if not member.id == self.client.user.id and member.bot is False:
+                return True
 
         for guild in self.client.guilds:
             if self.check.guild(guild.id) is False:
@@ -188,7 +187,7 @@ class MyClient(commands.Cog, name="Client"):
                 self.client.create(guild.id, self.client.user.id)
 
             for member in guild.members:
-                if check_isBot(member):
+                if check_is_bot(member):
                     if self.check.user(guild.id, member.id) is False:
                         self.user.create(guild.id, member.id)
                         print("[?] Usuário: %s(%s) do servidor %s(%s) foi configurado na database! [Inicialização]" % (member.name, member.id, guild.name, guild.id))
@@ -366,10 +365,64 @@ class MyClient(commands.Cog, name="Client"):
                 embed.add_field(name=f"{MsgEdit2I}Msg Editada:", value=f"```{before.content}```", inline=False)
                 return await self.client.get_channel(logs).send(embed=embed)
 
+    async def on_message_delete(self, message):
+        async for entry in message.guild.audit_logs(action=discord.AuditLogAction.unban):
+            if message.author.id == entry.target.id:
+                return
+
+        if message.author.bot:
+            return
+
+        if self.check.guild(message.guild.id):
+            Logs = self.guild.get_logs(message.guild.id)
+            if Logs != 0:
+                embed = discord.Embed(title=f"{MsgDelI} Logs - {message.channel.name}", color=0x444444, timestamp=datetime.utcnow())
+                embed.add_field(name=f"{NameI}Nome:", value=f"```{message.author.name}```")
+                embed.add_field(name=f"{IdI}ID:", value=f"```{message.author.id}```")
+                embed.add_field(name=f"{MsgI}Mensagem:", value=f"```{message.content}```", inline=False)
+                return await self.client.get_channel(Logs).send(embed=embed)
+
+    async def on_voice_state_update(self, member, before, after):
+        if self.check.guild(member.guild.id):
+            Logs = self.guild.get_logs(member.guild.id)
+            if Logs != 0:
+                if not after.channel is None:
+                    embed = discord.Embed(title=f"{VoiceUpI} Logs - {member.guild.name}", color=16761645, timestamp=datetime.utcnow())
+                    embed.add_field(name=f"{NameI}Nome:", value=f"```{member.name}```")
+                    embed.add_field(name=f"{IdI}ID:", value=f"```{member.id}```")
+                    embed.add_field(name=f"{VoiceI}Canal:", value=f"```{after.channel.name}```", inline=False)
+                    await self.client.get_channel(Logs).send(embed=embed)
+                else:
+                    embed = discord.Embed(title=f"{VoiceDownI} Logs - {member.guild.name}", color=16761645, timestamp=datetime.utcnow())
+                    embed.add_field(name=f"{NameI}Nome:", value=f"```{member.name}```")
+                    embed.add_field(name=f"{IdI}ID:", value=f"```{member.id}```")
+                    embed.add_field(name=f"{VoiceI}Canal:", value=f"```{before.channel.name}```", inline=False)
+                    await self.client.get_channel(Logs).send(embed=embed)
+
+
 class MyCommand(commands.Cog, name="Command"):
     def __init__(self, client):
         self.client = client
         self.uptime = Uptime
+
+    @client.check
+    async def globally_check_command(ctx):
+        guild = database.guild()
+        check = database.check()
+ 
+        if check.guild(ctx.guild.id) == False:
+            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, você precisa configurar o servidor na database.", color=0xef0027))
+            return False
+
+        if check.user(ctx.guild.id, ctx.author.id) == False:
+            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, você precisa configurar seu usuário na database.", color=0xef0027))
+            return False
+
+        if not guild.get_whitelist(ctx.guild.id) == ctx.channel.id and not guild.get_whitelist(ctx.guild.id) == 0 and not ctx.author.id == ctx.guild.owner.id:
+            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
+            return False
+
+        return True
 
     @commands.command(name="load")
     @commands.is_owner()
@@ -413,17 +466,19 @@ client.add_listener(MyClient(client).on_guild_remove)
 client.add_listener(MyClient(client).on_member_ban)
 client.add_listener(MyClient(client).on_member_unban)
 client.add_listener(MyClient(client).on_member_update)
-"""
 
 client.add_listener(MyClient(client).on_message_delete)
 client.add_listener(MyClient(client).on_message_edit)
 
-client.add_listener(MyClient(client).on_raw_reaction_add)
-client.add_listener(MyClient(client).on_raw_reaction_remove)
-
 client.add_listener(MyClient(client).on_voice_state_update)
 """
 
+
+client.add_listener(MyClient(client).on_raw_reaction_add)
+client.add_listener(MyClient(client).on_raw_reaction_remove)
+
 loop_covid.start()
+"""
+
 loop_status.start()
 client.run(TOKEN, bot=True, reconnect=True)

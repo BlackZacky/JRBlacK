@@ -1,8 +1,8 @@
 from Commands.Utils.icons import getIcon
-from Commands.Utils.check import checks
 from discord.ext import commands
 from datetime import datetime
 from Database import *
+from . import sub_commands
 
 import discord
 import random
@@ -39,41 +39,20 @@ class MyBank(commands.Cog, name="Banco"):
         self.guild = database.guild()
         self.user  = database.user()
 
-    async def sub_commands(self, ctx, command):
-        lista = []
-        for x in self.client.get_command(command).all_commands:
-            if self.client.get_command(f'{command} {x}').name is x:
-                lista.append(x)
-
-        x = "".join(lista)
-        if len(lista) > 1:
-            x = " | ".join(lista)
-
-        return await ctx.send(f"""```asciidoc
-[Comando {command}]
-  Modo de uso    :: {self.client.get_command(command).usage}
-  Sub Comando(s) :: {x}
-```""")
-
-    @commands.group(name="banco", aliases=["bank"], no_pm=True, usage="[p]banco [sub command]")
+    @commands.group(name="banco", aliases=["bank"], usage="[p]banco [sub command]")
+    @commands.guild_only()
     async def _bank(self, ctx):
         if self.guild.get_systemEconomy(ctx.guild.id) == 'True':
             if not self.check.user(ctx.guild.id, ctx.author.id):
                 self.user.create(ctx.guild.id, ctx.author.id)
 
         if ctx.invoked_subcommand is None:
-            if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-                return await self.sub_commands(ctx, ctx.command.name)
-            else:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
+            return await sub_commands(self.client, ctx, ctx.command.name)
 
-    @commands.check(checks.whitelist)
+    @_bank.command(aliases=['diariamente', 'salario'], usage="[p]banco daily")
+    @commands.guild_only()
     @commands.cooldown(1, 54000, commands.BucketType.member)
-    @_bank.command(aliases=['diariamente', 'salario'], no_pm=True, usage="[p]banco daily")
     async def daily(self, ctx):
-        if self.check.guild(ctx.guild.id) is False:
-            return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-            
         if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
             return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -83,14 +62,10 @@ class MyBank(commands.Cog, name="Banco"):
         self.user.post_moneyHand(ctx.guild.id, ctx.author.id, int(d))
         await ctx.send(embed=discord.Embed(color=0x444444, description=f"**{ctx.author.mention}: Reclamou seu Daily Reward no valor de: `${d}`.**"))
 
-    @commands.check(checks.whitelist)
+    @_bank.command(name="depositar", alises=["deposit"], usage="[p]banco depositar [valor]")
     @commands.cooldown(1, 900, commands.BucketType.member)
-    @_bank.command(name="depositar", alises=["deposit"], no_pm=True, usage="[p]banco depositar [valor]")
     async def deposit(self, ctx, Money:int=None):
         if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-
             if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -121,14 +96,11 @@ class MyBank(commands.Cog, name="Banco"):
             await ctx.send(embed=embed)
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
-    
-    @commands.check(checks.whitelist)
-    @_bank.command(name="sacar", alises=["draw"], no_pm=True, usage="[p]banco sacar [valor]")
-    async def draw(self, ctx, Money:int=None):
-        if self.guild.whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
 
+    @_bank.command(name="sacar", alises=["draw"], usage="[p]banco sacar [valor]")
+    @commands.guild_only()
+    async def draw(self, ctx, Money:int=None):
+        if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
             if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -157,14 +129,11 @@ class MyBank(commands.Cog, name="Banco"):
             await ctx.send(embed=embed)
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
-    
-    @commands.check(checks.whitelist)
-    @_bank.command(name="transferir", aliases=["transfer"], no_pm=True, usage="[p]banco transferir [membro] [valor]")
+
+    @_bank.command(name="transferir", aliases=["transfer"], usage="[p]banco transferir [membro] [valor]")
+    @commands.guild_only()
     async def transfer(self, ctx, Member:discord.Member=None, Money:int=None):
         if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-
             if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -199,14 +168,11 @@ class MyBank(commands.Cog, name="Banco"):
             await ctx.send(embed=embed)
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
-
-    @commands.check(checks.whitelist)
-    @_bank.command(name="extrato", aliases=["extract"], no_pm=True, usage="[p]banco extrato")
+    
+    @_bank.command(name="extrato", aliases=["extract"], usage="[p]banco extrato")
+    @commands.guild_only()
     async def extract(self, ctx):
         if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-
             if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -225,13 +191,10 @@ class MyBank(commands.Cog, name="Banco"):
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
 
-    @commands.check(checks.whitelist)
-    @_bank.command(name="classificação", aliases=["rank","ranking"], no_pm=True, usage="[p]banco rank")
+    @_bank.command(name="classificação", aliases=["rank","ranking"], usage="[p]banco rank")
+    @commands.guild_only()
     async def ranking(self, ctx):
         if self.guild.get_whitelist(ctx.guild.id) == ctx.channel.id or self.guild.get_whitelist(ctx.guild.id) == 0:
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
-
             if self.guild.get_systemEconomy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{BankI} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
@@ -252,9 +215,6 @@ class MyBank(commands.Cog, name="Banco"):
             else:
                 await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
         
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
-    
     @deposit.error
     async def deposit_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -265,29 +225,6 @@ class MyBank(commands.Cog, name="Banco"):
                 await ctx.send(embed=discord.Embed(color=0xef0027, description=f"**{ctx.author.mention} : Espere por ``{round(sec)}`` segundos.**"))
             else:
                 await ctx.send(embed=discord.Embed(color=0xef0027, description=f"**{ctx.author.mention} : Só podera depositar em ``{round(h)}`` hora(s) e ``{round(min)}`` minuto(s).**"))
-        
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
-
-    @draw.error
-    async def draw_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
-
-    @transfer.error
-    async def transfer_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
-
-    @extract.error
-    async def extract_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
-
-    @ranking.error
-    async def ranking_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027))
 
 def setup(client):
     client.add_cog(MyBank(client))

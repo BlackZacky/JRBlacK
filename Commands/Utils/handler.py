@@ -52,6 +52,9 @@ class MyHandler(commands.Cog, name="Handler Error"):
         if isinstance(error, commands.NotOwner):
             return await ctx.send(f"```asciidoc\nPermissions :: {ctx.author} você não tem permissão para fazer o uso deste comando.```")
 
+        if isinstance(error, commands.CheckFailure):
+            pass
+
 def setup(bot):
     bot.add_cog(MyHandler(bot))
     bot.add_listener(MyHandler(bot).on_command_error)
