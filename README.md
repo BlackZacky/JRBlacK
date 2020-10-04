@@ -16,7 +16,7 @@ Está nova atualização conta com dois módulos novos e três novos comandos, s
 
 JrBlack requer [Python3](https://python.org/) v3.6.6+ para poder rodar o bot perfeitamente.
 
-##### **Etapa 1:** Baixando código e dependências
+#### **Etapa 1:** Baixando código e dependências
 ```sh
 $ git clone https://github.com/blkzy/JRBlacK
 $ cd JRBlacK
@@ -24,21 +24,21 @@ $ python3 -m pip install -r requirements.txt
 $ sudo apt-get install nmap # Isso no caso do seu sistema ser baseado no Debian ou Ubuntu.
 ```
 
-##### **Etapa 2:** Database
+#### **Etapa 2:** Database
 O JRBlacK Utiliza banco de dados NoSQL ou melhor... MongoDB.
 Estarei disponibilizando a baixo um site que disponibiliza essas database gratuitamente.
 Caso não tenha muita familiaridade com MongoDB, basta procurar algum tutorial/curso no youtube que você irá entender perfeitamente o funcionamento e como utilizar o database NoSQL.
 
 - MongoDB Atlas: https://www.mongodb.com/cloud/atlas
 
-##### **Etapa 3:** Icon's
+#### **Etapa 3:** Icon's
 Sim! O bot tem sistema de icone personalizado...
 Mas um pequeno probleminha que esse tipo de coisa faz é a falta de paciência para colocar todos os iconês.
 Para que você consiga colocar todos os iconês, basta você criar alguns grupos. Acho que na faixa de uns 5 (até o momento).
 
 - Icons8: https://icons8.com/icon/new-icons/color
 
-##### **Etapa 4:** Api's necessárias
+#### **Etapa 4:** Api's necessárias
 O bot utiliza de algumas API's para funcionar alguns comandos. Tais como: `news` e `film`.
 Para ter acesso as Key's dessas api basta você entrar nos links abaixo e se cadastrar nos sites, que ele irá te fornecer a Key.
 Com as Key's em mãos basta ir no arquivo [Database/__init__.py](https://github.com/BlackZacky/JRBlacK-BOT/blob/master/Database/__init__.py), e colocar as key's lá!
