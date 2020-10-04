@@ -45,6 +45,7 @@ Com as Key's em mãos basta ir no arquivo [Database/__init__.py](https://github.
 
 - OMDbApi: https://www.omdbapi.com/
 - NewsApi: https://newsapi.org/
+- Weather: https://openweathermap.org/api
 
 #### *Etapa Final:** inicie o bot
 
