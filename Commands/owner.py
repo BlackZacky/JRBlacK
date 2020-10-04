@@ -69,11 +69,9 @@ class MyOwner(commands.Cog, name="Administração"):
     @commands.bot_has_permissions(manage_roles=True)
     @commands.has_permissions(manage_roles=True)
     async def mute(self, ctx, member:discord.Member=None, *, time:TimeConverter=None):
-        MuteRole = self.guild.get_muteRole(ctx.guild.id)
+        MuteRole = self.guild.get_mute_role(ctx.guild.id)
         Logs     = self.guild.get_logs(ctx.guild.id)
 
-        if self.check.guild(ctx.guild.id):
-            return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você precisa configurar o servidor na database.", color=0xef0027))
         if MuteRole == 0:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, este comando está desativado neste servidor.", color=0xef0027))
         if member is None:
@@ -159,9 +157,7 @@ class MyOwner(commands.Cog, name="Administração"):
             return await ctx.send(embed=discord.Embed(description=f"Limite de 100 mensagens por vez. [**{number}/100**]", color=0xef0027))
         
         await ctx.channel.purge(limit=number)
-        msg = await ctx.send(embed=discord.Embed(description=f"{TrashI} **{number}** Mensagens apagadas.", color=0x5C6BC0))
-        await asyncio.sleep(8)
-        await msg.delete()
+        await ctx.send(embed=discord.Embed(description=f"{TrashI} **{number}** Mensagens apagadas.", color=0x5C6BC0), delete_after=30)
 
     @commands.command(hidden=True)
     @commands.is_owner()

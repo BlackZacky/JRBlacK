@@ -75,97 +75,97 @@ class guild:
         if self.check.guild(GuildID):
             return self.tuple(True, self.coll.delete({"GuildID": GuildID}))
 
-        return self.tuple(False, 0)
+        return self.tuple(False, False)
 
     def post_logs(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelLogs': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelLogs': ChannelID}})
 
-    def post_autoReact(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelSuggestion': ChannelID}}))
+    def post_auto_react(self, GuildID:int, ChannelID:int):
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelSuggestion': ChannelID}})
 
     def post_harddisk(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk': ChannelID}})
 
-    def post_harddisk2(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk2': ChannelID}}))
+    def post_harddisk_2(self, GuildID:int, ChannelID:int):
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk2': ChannelID}})
 
-    def post_harddisk3(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk3': ChannelID}}))
+    def post_harddisk_3(self, GuildID:int, ChannelID:int):
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelHardDisk3': ChannelID}})
 
     def post_welcome(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelWelcome': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelWelcome': ChannelID}})
 
     def post_counter(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelCounter': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelCounter': ChannelID}})
 
     def post_news(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelNews': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelNews': ChannelID}})
 
     def post_lottery(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelLottery': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelLottery': ChannelID}})
 
-    def post_autoRole(self, GuildID:int, RoleID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'RoleID.AutoRole': RoleID}}))
+    def post_auto_role(self, GuildID:int, RoleID:int):
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'RoleID.AutoRole': RoleID}})
 
-    def post_muteRole(self, GuildID:int, RoleID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'RoleID.MuteRole': RoleID}}))
+    def post_mute_role(self, GuildID:int, RoleID:int):
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'RoleID.MuteRole': RoleID}})
 
-    def post_systemXpLevel(self, GuildID:int):
+    def post_system_xp_level(self, GuildID:int):
         if ([x['System']['XpLevel'] for x in self.coll.find({'GuildID':GuildID})])[0] == "True":
             return self.tuple(False, self.coll.update_one({'GuildID': GuildID}, {'$set':{'System.XpLevel': 'False'}}))
 
         return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'System.XpLevel': 'True'}}))
 
-    def post_systemEconomy(self, GuildID:int):
+    def post_system_economy(self, GuildID:int):
         if ([x['System']['Economy'] for x in self.coll.find({'GuildID':GuildID})])[0] == "True":
             return self.tuple(False, self.coll.update_one({'GuildID': GuildID}, {'$set':{'System.Economy': 'False'}}))
 
         return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'System.Economy': 'True'}}))
 
     def post_whitelist(self, GuildID:int, ChannelID:int):
-        return self.tuple(True, self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelWhitelist': ChannelID}}))
+        return self.coll.update_one({'GuildID': GuildID}, {'$set':{'ChannelID.ChannelWhitelist': ChannelID}})
 
     def get_logs(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelLogs'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelLogs'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_autoReact(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelSuggestion'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_auto_react(self, GuildID:int):
+        return ([x['ChannelID']['ChannelSuggestion'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_harddisk(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelHardDisk'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelHardDisk'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_harddisk2(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelHardDisk2'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_harddisk_2(self, GuildID:int):
+        return ([x['ChannelID']['ChannelHardDisk2'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_harddisk3(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelHardDisk3'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_harddisk_3(self, GuildID:int):
+        return ([x['ChannelID']['ChannelHardDisk3'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_welcome(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelWelcome'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelWelcome'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_counter(self, GuildID:int):
-       return self.tuple(True, ([x['ChannelID']['ChannelCounter'] for x in self.coll.find({'GuildID':GuildID})])[0])
+       return ([x['ChannelID']['ChannelCounter'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_news(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelNews'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelNews'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_lottery(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelLottery'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelLottery'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_autoRole(self, GuildID:int):
-        return self.tuple(True, ([x['RoleID']['AutoRole'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_auto_role(self, GuildID:int):
+        return ([x['RoleID']['AutoRole'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_muteRole(self, GuildID:int):
-        return self.tuple(True, ([x['RoleID']['MuteRole'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_mute_role(self, GuildID:int):
+        return ([x['RoleID']['MuteRole'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_systemXpLevel(self, GuildID:int):
-        return self.tuple(True, ([x['System']['XpLevel'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_system_xp_level(self, GuildID:int):
+        return ([x['System']['XpLevel'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
-    def get_systemEconomy(self, GuildID:int):
-        return self.tuple(True, ([x['System']['Economy'] for x in self.coll.find({'GuildID':GuildID})])[0])
+    def get_system_economy(self, GuildID:int):
+        return ([x['System']['Economy'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
     def get_whitelist(self, GuildID:int):
-        return self.tuple(True, ([x['ChannelID']['ChannelWhitelist'] for x in self.coll.find({'GuildID':GuildID})])[0])
+        return ([x['ChannelID']['ChannelWhitelist'] for x in self.coll.find({'GuildID':GuildID})])[0]
 
 class user:
     """
@@ -206,7 +206,11 @@ class user:
                     "Background": [],
                     "Weapon":     [],
                     "CreditCard": 0},
-                "About":          "Sem descrição."
+                "About":          "Sem descrição.",
+                "Command":{
+                    "Name": "False",
+                    "Datetime": "False",
+                },
         }
 
         return self.tuple(True, self.coll.insert(json))
@@ -217,87 +221,87 @@ class user:
         return self.tuple(False, 0)
 
     def post_report(self, GuildID:int, MemberID:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Report": 1}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Report": 1}})
 
     def post_messages(self, GuildID:int, MemberID:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Messages": 1}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Messages": 1}})
 
     def post_about(self, GuildID:int, MemberID:int, About:str):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"About": About}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"About": About}})
 
-    def post_moneyBank(self, GuildID:int, MemberID:int, Money:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Bank.MoneyBank": Money}}))
+    def post_money_bank(self, GuildID:int, MemberID:int, Money:int):
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Bank.MoneyBank": Money}})
 
-    def post_moneyHand(self, GuildID:int, MemberID:int, Money:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Bank.MoneyHand": Money}}))
+    def post_money_hand(self, GuildID:int, MemberID:int, Money:int):
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Bank.MoneyHand": Money}})
 
     def post_level(self, GuildID:int, MemberID:int):
         if ([x["XpLevel"]["Level"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0] < int(([x["XpLevel"]["Xp"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0] ** (1/4)):
             return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"XpLevel.Level": 1}}))
-        return self.tuple(False, 0)
+        return self.tuple(False, False)
 
     def post_xp(self, GuildID:int, MemberID:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"XpLevel.Xp": 2}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"XpLevel.Xp": 2}})
 
     def post_background(self, GuildID:int, MemberID:int, Url:str):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"Background": Url}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"Background": Url}})
 
-    def post_inventoryBackground(self, GuildID:int, MemberID:int, Url:str):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$push":{"Inventory.Background": Url}}))
+    def post_inventory_background(self, GuildID:int, MemberID:int, Url:str):
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$push":{"Inventory.Background": Url}})
 
-    def post_inventoryWeapon(self, GuildID:int, MemberID:int, Weapon:str):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$push":{"Inventory.Weapon": Weapon}}))
+    def post_inventory_weapon(self, GuildID:int, MemberID:int, Weapon:str):
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$push":{"Inventory.Weapon": Weapon}})
 
-    def post_creditCard(self, GuildID:int, MemberID:int, CardNumber:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Inventory.CreditCard": CardNumber}}))
+    def post_credit_card(self, GuildID:int, MemberID:int, CardNumber:int):
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$inc":{"Inventory.CreditCard": CardNumber}})
 
     def post_job(self, GuildID:int, MemberID:int, Job:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"Job": Job}}))
+        return self.coll.update_one({"GuildID": GuildID, "MemberID": MemberID}, {"$set":{"Job": Job}})
 
     def get_report(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Report"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0])
+        return ([x["Report"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0]
 
     def get_messages(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Messages"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0])
+        return ([x["Messages"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0]
 
     def get_about(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["About"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0])
+        return ([x["About"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0]
 
-    def get_moneyBank(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Bank"]["MoneyBank"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0])
+    def get_money_bank(self, GuildID:int, MemberID:int):
+        return ([x["Bank"]["MoneyBank"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0]
 
-    def get_moneyHand(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Bank"]["MoneyHand"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0])
+    def get_money_hand(self, GuildID:int, MemberID:int):
+        return ([x["Bank"]["MoneyHand"] for x in self.coll.find({'GuildID':GuildID, "MemberID": MemberID})])[0]
 
-    def get_moneyRank(self, GuildID:int, MemberID:int):
+    def get_bank_rank(self, GuildID:int, MemberID:int):
         Rank = []
         Count = 0
         for i in self.coll.find({"GuildID":GuildID}).sort('Bank.MoneyBank', -1).limit(10):
             Count += 1
             Rank.append(f"**{Count}º ➜** <@{i['MemberID']}> - **${i['Bank']['MoneyBank']}**")
 
-        return self.tuple(True, "\n\n".join(Rank))
+        return "\n\n".join(Rank)
 
     def get_level(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["XpLevel"]["Level"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0])
+        return ([x["XpLevel"]["Level"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0]
 
     def get_xp(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["XpLevel"]["Xp"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0])
+        return ([x["XpLevel"]["Xp"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0]
 
     def get_background(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Background"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0])
+        return ([x["Background"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0]
 
-    def get_inventoryBackground(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Inventory"]["Background"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0])
+    def get_inventory_background(self, GuildID:int, MemberID:int):
+        return ([x["Inventory"]["Background"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0]
 
-    def get_inventoryWeapon(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Inventory"]["Weapon"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0])
+    def get_inventory_weapon(self, GuildID:int, MemberID:int):
+        return ([x["Inventory"]["Weapon"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])[0]
 
-    def get_creditCard(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Inventory"]["CreditCard"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})]))
+    def get_credit_card(self, GuildID:int, MemberID:int):
+        return ([x["Inventory"]["CreditCard"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])
 
     def get_job(self, GuildID:int, MemberID:int):
-        return self.tuple(True, ([x["Job"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})]))
+        return ([x["Job"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])
 
 class bot:
     def __init__(self, client):
@@ -308,7 +312,7 @@ class bot:
 
     def create(self, GuildID:int, BotID:int):
         if self.check.bot(GuildID, BotID):
-            return self.tuple(False, 0)
+            return False
 
         json = {"GuildID": GuildID,
                 "BotID": BotID,
@@ -317,19 +321,20 @@ class bot:
                 "Casanik":{
                   "Money": 10000}}
 
-        return self.tuple(True, self.coll.insert(json))
+        self.coll.insert(json)
+        return True
 
     def delete(self, GuildID:int, BotID:int):
         if not self.check.guild(GuildID):
-            return self.tuple(False, 0)
+            return False
         
-        return self.tuple(True, self.coll.delete({"GuildID": GuildID, "BotID": BotID}))
+        return self.coll.delete({"GuildID": GuildID, "BotID": BotID})
 
     def post_casanik(self, GuildID:int, BotID:int, Money:int):
-        return self.tuple(True, self.coll.update_one({"GuildID": GuildID, "BotID": BotID}, {"$inc":{"Casanik.Money": Money}}))
+        return self.coll.update_one({"GuildID": GuildID, "BotID": BotID}, {"$inc":{"Casanik.Money": Money}})
 
     def get_casanik(self, GuildID:int, BotID:int):
-        return self.tuple(True, ([x["Casanik"]["Money"] for x in self.coll.find({"GuildID":GuildID, "BotID":BotID})]))
+        return ([x["Casanik"]["Money"] for x in self.coll.find({"GuildID":GuildID, "BotID":BotID})])
 
 print("Database: Conectado!")
 

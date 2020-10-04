@@ -5,15 +5,16 @@ from discord.ext import commands
 from os import getpid, system
 from random import randint
 from io import BytesIO
-from . import sub_commands
 
+from Database import OMBDBAPI, NEWSAPI, OMBDBAPI
 from Database import database
+
+from . import sub_commands
 from Commands.Utils.icons import getIcon
 
 import discord, psutil
-import requests, time
+import aiohttp, time
 import glob, main
-import json
 import wikipedia
 
 NameI         = getIcon("Name")
@@ -135,10 +136,30 @@ class MemoryRam:
     def process_python(self):
         return f"{self.process / 4194304:.2f} MB"
 
+class RequestApi:
+    async def weather(self, location: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={WEATHERAPI}") as request:
+                request = await request
+        return request.json(), request.status()
+
+    async def omdb(self, film: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"http://www.omdbapi.com/?apikey={OMBDBAPI}&t={film}") as request:
+                request = await request
+        return request.json(), request.status()
+
+    async def news(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://newsapi.org/v2/top-headlines?sources=google-news-br&apiKey={NEWSAPI}") as request:
+                request = await request
+        return request.json(), request.status()
+
 class MyInformation(commands.Cog, name="Informações"):
     def __init__(self, client):
         self.client = client
         self.ram    = MemoryRam()
+        self.request= RequestApi()
         self.uptime = main.Uptime()
         self.guild  = database.guild()
         self.user   = database.user()
@@ -153,8 +174,8 @@ class MyInformation(commands.Cog, name="Informações"):
     @_info.command(aliases=["inven", "inventory"], usage="[p]info inventario")
     @commands.guild_only()
     async def inventario(self, ctx):
-        background = self.user.get_inventoryBackground(ctx.guild.id, ctx.author.id)
-        weapon     = self.user.get_inventoryWeapon(ctx.guild.id, ctx.author.id)
+        background = self.user.get_inventory_background(ctx.guild.id, ctx.author.id)
+        weapon     = self.user.get_inventory_weapon(ctx.guild.id, ctx.author.id)
 
         x = "".join(background)
         if len(background) > 1:
@@ -209,9 +230,11 @@ class MyInformation(commands.Cog, name="Informações"):
         embed.add_field(name=f"{WelI}Welcome:",       value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_welcome(ctx.guild.id))}```")
         embed.add_field(name=f"{CounterI}Counter:",   value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_counter(ctx.guild.id))}```")
         embed.add_field(name=f"{HddI}Hard Disk:",     value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_harddisk(ctx.guild.id))}```")
-        embed.add_field(name=f"{HintI}Auto React:",   value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_autoReact(ctx.guild.id))}```")
-        embed.add_field(name=f"{ScienceI}Auto Role:", value=f"```{discord.utils.get(ctx.guild.roles, id=self.guild.get_autoRole(ctx.guild.id))}```")
-        embed.add_field(name=f"{SilenceI}Mute Role:", value=f"```{discord.utils.get(ctx.guild.roles, id=self.guild.get_muteRole(ctx.guild.id))}```")
+        embed.add_field(name=f"{HddI}Hard Disk 2:",     value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_harddisk_2(ctx.guild.id))}```")
+        embed.add_field(name=f"{HddI}Hard Disk 3:",     value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_harddisk_3(ctx.guild.id))}```")
+        embed.add_field(name=f"{HintI}Auto React:",   value=f"```#{discord.utils.get(ctx.guild.channels, id=self.guild.get_auto_react(ctx.guild.id))}```")
+        embed.add_field(name=f"{ScienceI}Auto Role:", value=f"```{discord.utils.get(ctx.guild.roles, id=self.guild.get_auto_role(ctx.guild.id))}```")
+        embed.add_field(name=f"{SilenceI}Mute Role:", value=f"```{discord.utils.get(ctx.guild.roles, id=self.guild.get_mute_role(ctx.guild.id))}```")
 
         await ctx.send(embed=embed)
 
@@ -268,7 +291,7 @@ class MyInformation(commands.Cog, name="Informações"):
   Bot modúlos ext    :: 6
   Bot comandos       :: {len(ctx.bot.all_commands)}
   Bot latência       :: {self.client.latency * 1000:.2f} ms
-  Bot versão         :: Alpha 2.0
+  Bot versão         :: 4.0
   Discord versão     :: {discord.__version__}
 
   Versão do python   :: {python_version()}
@@ -281,9 +304,9 @@ class MyInformation(commands.Cog, name="Informações"):
     @_info.command(name="perfil", aliases=["profile"])
     @commands.guild_only()
     async def profile(self, ctx):
-        if self.guild.get_systemXpLevel(ctx.guild.id) == "False":
+        if self.guild.get_system_xp_level(ctx.guild.id) == "False":
             return await ctx.send(embed=discord.Embed(description=f"{XpI} Para que este comando funcione é necessario que o **Sistema de Xp/Level** esteja ativo.", color=0xef0027).set_footer(text="Para ativar user o comando: [p]set xplevel"))
-        if self.guild.get_systemEconomy(ctx.guild.id) == "False":
+        if self.guild.get_system_economy(ctx.guild.id) == "False":
             return await ctx.send(embed=discord.Embed(description=f"{BankI} Para este comando funcionar é necessario que o **Sistema de Economia** esteja ativo.", color=0xef0027).set_footer(text="Para ativar use o comando: [p]set economy"))
         if self.check.user(ctx.guild.id, ctx.author.id) == "False":
             return await ctx.send(embed=discord.Embed(description=f"{BankI} Para este comando funcionar é necessario que você esteja configurado na minha database.", color=0xef0027).set_footer(text=f"Para configurar use o comando: {self.client.user.mention} !!"))
@@ -326,8 +349,8 @@ class MyInformation(commands.Cog, name="Informações"):
         Output.putalpha(Mask)
         Output.save("Utils/Images/avatar.png")
 
-        MoneyBank = self.user.get_moneyBank(ctx.guild.id, ctx.author.id)
-        MoneyHand = self.user.get_moneyHand(ctx.guild.id, ctx.author.id)
+        MoneyBank = self.user.get_money_bank(ctx.guild.id, ctx.author.id)
+        MoneyHand = self.user.get_money_hand(ctx.guild.id, ctx.author.id)
         About     = (self.user.get_about(ctx.guild.id, ctx.author.id)).capitalize()
         Level     = self.user.get_level(ctx.guild.id, ctx.author.id)
         Xp        = self.user.get_xp(ctx.guild.id, ctx.author.id)
@@ -374,7 +397,7 @@ class MyInformation(commands.Cog, name="Informações"):
         embed.add_field(name=f"🌀Maior cargo:", value=f"```{member.top_role}```")
         embed.add_field(name=f"{ColorI}Cor:", value=f"```{member.color}```")
 
-        if self.guild.get_SystemXpLevel(ctx.guild.id) == 'True':
+        if self.guild.get_system_xp_level(ctx.guild.id) == 'True':
             embed.add_field(name=f"{LevelI}Nivel:", value=f"```{self.user.get_level(ctx.guild.id, member.id)}```")
             embed.add_field(name=f"{XpI}Xp:", value=f"```{self.user.get_xp(ctx.guild.id, member.id)}```")
 
@@ -481,53 +504,92 @@ class MyInformation(commands.Cog, name="Informações"):
         count = len([member for member in ctx.guild.members if discord.utils.get(member.roles, name=role.name)])
         await ctx.send(f">>> ```diff\nName    : {role.name}\nMembers : {count}\n\n{a}\n{b}```")
 
-    @_info.command(aliases=["film"], description="Ver informações do filme que deseja pelo OMdb.", usage="[p]info filme [Nome do Filme]")
+    @_info.command(name="filme", aliases=["film"], description="Ver informações do filme que deseja pelo OMdb.", usage="[p]info filme [Nome do Filme]")
     @commands.guild_only()
-    async def filme(self, ctx, *, film:str=None):
+    async def film(self, ctx, *, film:str=None):
         if film is None:
-            return ctx.send(embed=discord.Embed(description=f"{ImdbI} Favor informar o filme.", color=0xc63939).set_footer(text="Modo de uso: [p]info filme [Nome do Filme]"))
+            return ctx.send(embed=discord.Embed(description=f"{ImdbI} Favor informar o filme.", color=0xc63939).set_footer(text="Modo de uso: [p]info filme [Nome do Filme]"), delete_after=30)
         
-        r = requests.get(f"http://www.omdbapi.com/?apikey=94256de8&t={film}")
-        if not r.status_code == 200:
-            return ctx.send(embed=discord.Embed(description=f"{ImdbI} API Indisponível no momento!", color=0xc63939))
+        request_code, request_status = await self.request.omdb(film=film)
+        if not request_status == 200:
+            return ctx.send(embed=discord.Embed(description=f"{ImdbI} API Indisponível no momento!", color=0xc63939), delete_after=30)
 
-        js = json.loads(r.text)
+        genre = str(request_code["Genre"]) \ 
+        .replace("Horror", f"{HorrorI}Terror") \ 
+        .replace("Animation", f"{AnimationI}Animação") \
+        .replace("Adventure", f"{AdventureI}Aventura") \ 
+        .replace("Art cinema", "Cinema de arte") \ 
+        .replace("Stained", "Manchado") \ 
+        .replace("Catastrophe cinema", "Cinema catástrofe") \ 
+        .replace("Action", f"{ActionI}Ação") \ 
+        .replace("Comedy", f"{ComedyI}Comédia") \ 
+        .replace("Romantic comedy", f"{ComedyI}Comédia romântica") \ 
+        .replace("Dramatic comedy", f"{DramaI}Comédia dramática") \ 
+        .replace("Dance", f"{MusicalI}Dança") \ 
+        .replace("Documentary", f"{DocumentaryI}Documentário") \ 
+        .replace("Docufiction", f"{ScifiI}Docuficção") \ 
+        .replace("Drama", f"{DramaI}Drama") \ 
+        .replace("Espionage", f"{SpyI}Espionagem") \ 
+        .replace("Sci-Fi", f"{ScifiI}Ficção científica") \ 
+        .replace("War Movies", f"{WarI}Guerra") \ 
+        .replace("Musical", f"{MusicalI}Músical") \ 
+        .replace("Police movie", f"{AgentI}Policial") \ 
+        .replace("Romance", f"{RomanceI}Romance") \ 
+        .replace("Sitcom", "Seriado") \ 
+        .replace("Thriller", f"{ThrillerI}Suspense")
 
-        genre = str(js["Genre"]).replace("Horror", f"{HorrorI}Terror").replace("Animation", f"{AnimationI}Animação").replace("Adventure", f"{AdventureI}Aventura").replace("Art cinema", "Cinema de arte").replace("Stained", "Manchado").replace("Catastrophe cinema", "Cinema catástrofe").replace("Action", f"{ActionI}Ação").replace("Comedy", f"{ComedyI}Comédia").replace("Romantic comedy", f"{ComedyI}Comédia romântica").replace("Dramatic comedy", f"{DramaI}Comédia dramática").replace("Dance", f"{MusicalI}Dança").replace("Documentary", f"{DocumentaryI}Documentário").replace("Docufiction", f"{ScifiI}Docuficção").replace("Drama", f"{DramaI}Drama").replace("Espionage", f"{SpyI}Espionagem").replace("Sci-Fi", f"{ScifiI}Ficção científica").replace("War Movies", f"{WarI}Guerra").replace("Musical", f"{MusicalI}Músical").replace("Police movie", f"{AgentI}Policial").replace("Romance", f"{RomanceI}Romance").replace("Sitcom", "Seriado").replace("Thriller", f"{ThrillerI}Suspense")
-        GeneroI = str(js["Genre"]).replace("Horror", f"{HorrorI}").replace("Animation", f"{AnimationI}").replace("Adventure", f"{AdventureI}").replace("Action", f"{ActionI}").replace("Comedy", f"{ComedyI}").replace("Romantic comedy", f"{ComedyI}").replace("Dramatic comedy", f"{DramaI}").replace("Dance", f"{MusicalI}").replace("Documentary", f"{DocumentaryI}").replace("Docufiction", f"{ScifiI}").replace("Drama", f"{DramaI}").replace("Espionage", f"{SpyI}").replace("Sci-Fi", f"{ScifiI}").replace("War Movies", f"{WarI}").replace("Musical", f"{MusicalI}").replace("Police movie", f"{AgentI}").replace("Romance", f"{RomanceI}").replace("Thriller", f"{ThrillerI}")
+        GeneroI = str(request_code["Genre"]) \
+        .replace("Horror", f"{HorrorI}") \
+        .replace("Animation", f"{AnimationI}") \ 
+        .replace("Adventure", f"{AdventureI}") \ 
+        .replace("Action", f"{ActionI}") \ 
+        .replace("Comedy", f"{ComedyI}") \
+        .replace("Romantic comedy", f"{ComedyI}") \ 
+        .replace("Dramatic comedy", f"{DramaI}") \
+        .replace("Dance", f"{MusicalI}") \
+        .replace("Documentary", f"{DocumentaryI}") \ 
+        .replace("Docufiction", f"{ScifiI}") \ 
+        .replace("Drama", f"{DramaI}") \
+        .replace("Espionage", f"{SpyI}") \
+        .replace("Sci-Fi", f"{ScifiI}") \ 
+        .replace("War Movies", f"{WarI}") \ 
+        .replace("Musical", f"{MusicalI}") \ 
+        .replace("Police movie", f"{AgentI}") \
+        .replace("Romance", f"{RomanceI}") \
+        .replace("Thriller", f"{ThrillerI}")
 
-        embed = discord.Embed(title=f"{ImdbI} JrFilme - {str(js['Title'])}", color=0xff0000, datetime=datetime.utcnow())
-        embed.add_field(name=f"{GeneroI}Genêro(s):",   value= str(genre))
-        embed.add_field(name=f"{TimeI}Tempo:",         value= str(js["Runtime"]))
-        embed.add_field(name=f"{CalendarI}Ano:",       value= str(js["Year"]))
-        embed.add_field(name=f"{DirectorI}Diretor:",   value= str(js["Director"]))
-        embed.add_field(name=f"{ActorsI}Atores:",      value= str(js["Actors"]))
-        embed.add_field(name=f"{ReportCardI}Nota(s):", value= str(js["imdbRating"]))
-        embed.set_thumbnail(url=str(js["Poster"]))
-        embed.set_footer(text=str(js["Production"]), icon_url=ctx.author.avatar_url)
+        embed = discord.Embed(title=f"{ImdbI} JrFilme - {str(request_code['Title'])}", color=0xff0000, datetime=datetime.utcnow())
+        embed.add_field(name=f"{GeneroI}Genêro(s):", value=str(genre))
+        embed.add_field(name=f"{TimeI}Tempo:", value=str(request_code["Runtime"]))
+        embed.add_field(name=f"{CalendarI}Ano:", value=str(request_code["Year"]))
+        embed.add_field(name=f"{DirectorI}Diretor:", value=str(request_code["Director"]))
+        embed.add_field(name=f"{ActorsI}Atores:", value=str(request_code["Actors"]))
+        embed.add_field(name=f"{ReportCardI}Nota(s):", value=str(request_code["imdbRating"]))
+        embed.set_thumbnail(url=str(request_code["Poster"]))
+        embed.set_footer(text=str(request_code["Production"]), icon_url=ctx.author.avatar_url)
 
         ctx.send(embed=embed)
 
-    @_info.command()
+    @_info.command(name="clima", aliases=["weather"])
     @commands.guild_only()
-    async def clima(self, ctx, *, mensagem:str=None):
-        if mensagem is None:
-            return await ctx.send(embed=discord.Embed(description=f"{WeatherMapI}Por favor informe o país, estado ou cidade.", color=0xef0027))
+    async def weather(self, ctx, *, location:str=None):
+        if location is None:
+            return await ctx.send(embed=discord.Embed(description=f"{WeatherMapI}Por favor informe o país, estado ou cidade.", color=0xef0027), delete_after=30)
 
-        tempo = json.loads(requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={mensagem}&appid=73b2c1d66800fad8cbedfdd4cc82031d").text)
+        request_code, request_status = await self.request.weather(location)
 
-        if int(tempo["cod"]) == 404:
-            return await ctx.send(embed=discord.Embed(description=f"{WeatherMapI}Não encontrei nenhum lugar com este nome 😟", color=0xef0027))
+        if int(request_code["cod"]) == 404:
+            return await ctx.send(embed=discord.Embed(description=f"{WeatherMapI}Não encontrei nenhum lugar com este nome 😟", color=0xef0027), delete_after=30)
 
-        nome        = str(tempo["name"])
-        description = str(tempo["weather"][0]["description"])
-        clima       = str(tempo["weather"][0]["main"])
-        umidade     = str(tempo["main"]["humidity"])
-        temperatura = int(tempo["main"]["temp"] - 273.15)
-        velocidade  = int(tempo["wind"]["speed"])
-        pais        = str(tempo["sys"]["country"])
-        longitude   = str(tempo["coord"]["lon"])
-        latitude    = str(tempo["coord"]["lat"])
+        nome        = str(request_code["name"])
+        description = str(request_code["weather"][0]["description"])
+        clima       = str(request_code["weather"][0]["main"])
+        umidade     = str(request_code["main"]["humidity"])
+        temperatura = int(request_code["main"]["temp"] - 273.15)
+        velocidade  = int(request_code["wind"]["speed"])
+        pais        = str(request_code["sys"]["country"])
+        longitude   = str(request_code["coord"]["lon"])
+        latitude    = str(request_code["coord"]["lat"])
 
         embed = discord.Embed(title=f"{WeatherMapI}OpenWeatherMap - {nome}", color=50175, timestamp=datetime.utcnow())
         embed.add_field(name=f"{NameI}Nome:", value=f"**```{nome}```**")
@@ -569,16 +631,15 @@ class MyInformation(commands.Cog, name="Informações"):
     @commands.command(aliases=["news"])
     @commands.guild_only()
     async def noticias(self, ctx):
-        lernews = json.loads(requests.get("https://newsapi.org/v2/top-headlines?sources=google-news-br&apiKey=eb75df2b12dc41aa9b8d02545227f03c").text) 
-        quantidade = (int(lernews["totalResults"]))
-        a = randint(0, int(quantidade))
+        request_code, request_status = await self.request.news()
+        random_result = randint(0, int(request_code["totalResults"]))
 
-        author      = str(lernews["articles"][int(a)]["author"]).replace("None", "Google News (Brasil)")
-        titulo      = str(lernews["articles"][int(a)]["title"])
-        description = str(lernews["articles"][int(a)]["description"]).replace("None", "Sem descrição.")
-        url         = str(lernews["articles"][int(a)]["url"])
-        data        = str(lernews["articles"][int(a)]["publishedAt"])
-        img         = str(lernews["articles"][int(a)]["urlToImage"])
+        author      = str(request_code["articles"][int(random_result)]["author"]).replace("None", "Google News (Brasil)")
+        titulo      = str(request_code["articles"][int(random_result)]["title"])
+        description = str(request_code["articles"][int(random_result)]["description"]).replace("None", "Sem descrição.")
+        url         = str(request_code["articles"][int(random_result)]["url"])
+        data        = str(request_code["articles"][int(random_result)]["publishedAt"])
+        img         = str(request_code["articles"][int(random_result)]["urlToImage"])
 
         embed = discord.Embed(title=f"{NewsI} JrNews - Notícias", color=0xFF4040, timestamp=datetime.utcnow())
         embed.add_field(name=f"{WriterI}**Autor:**", value=f"**```{author}```**")
@@ -588,11 +649,11 @@ class MyInformation(commands.Cog, name="Informações"):
         embed.set_thumbnail(url=img)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["wiki", "wkpd"])
     @commands.guild_only()
-    async def wiki(self, ctx, query:str=None):
+    async def wikipedia(self, ctx, query:str=None):
         if query is None:
-            return await ctx.send(embed=discord.Embed(description=f"{WikiI}Você não informou o que deseja...", color=0xef0027))
+            return await ctx.send(embed=discord.Embed(description=f"{WikiI}Você não informou o que deseja...", color=0xef0027), delete_after=30)
 
         try:
             q = wikipedia.page(query)
@@ -600,7 +661,7 @@ class MyInformation(commands.Cog, name="Informações"):
             summary = wikipedia.summary(query, sentences=5)
             await ctx.send(embed=discord.Embed(title=f"{WikiI}Wikipédia - {query}", description=f"**```{summary}```**\nPara mais informações [**clique aqui**]({q.url})", color=0x2196f3))
         except wikipedia.exceptions.PageError:
-            await ctx.send(embed=discord.Embed(description=f"{WikiI}Poxa :/ Não consegui encontrar nada com este título.", color=0xef0027))
+            await ctx.send(embed=discord.Embed(description=f"{WikiI}Poxa :/ Não consegui encontrar nada com este título.", color=0xef0027), delete_after=30)
 
 def setup(client):
     client.add_cog(MyInformation(client))

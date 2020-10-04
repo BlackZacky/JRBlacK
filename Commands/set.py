@@ -32,7 +32,7 @@ class MySet(commands.Cog, name="Setar"):
              "E8":"<:eight:571424008072069142>",
              "E9":"<:nine:571424008130527272>"}
 
-    @commands.group(name="setar", aliases=["set"], usage="[p]setar [sub comando]", no_pm=True)
+    @commands.group(name="setar", aliases=["set"], usage="[p]setar [sub comando]")
     @commands.guild_only()
     async def _Set(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -81,7 +81,7 @@ class MySet(commands.Cog, name="Setar"):
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ErrorI} O background que você informou não existe.", color=0xef0027))
 
-    @_Set.command(name="economia", aliases=["economy"], no_pm=True)
+    @_Set.command(name="economia", aliases=["economy"])
     @commands.guild_only()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
@@ -89,14 +89,14 @@ class MySet(commands.Cog, name="Setar"):
         if self.check.guild(ctx.guild.id) is False:
             return await ctx.send(embed=discord.Embed(description=f"**{MongoDBI} {ctx.author.mention}, você precisa configurar o servidor na database.**", color=0xef0027))
         
-        if self.guild.get_systemEconomy(ctx.guild.id) == "True":
-            self.guild.post_systemEconomy(ctx.guild.id)
+        if self.guild.get_system_economy(ctx.guild.id) == "True":
+            self.guild.post_system_economy(ctx.guild.id)
             return await ctx.send(embed=discord.Embed(description=f"Sistema de _economia_ do servidor foi **desativado**.", color=0xef0027))
         
-        self.guild.post_systemEconomy(ctx.guild.id)
+        self.guild.post_system_economy(ctx.guild.id)
         await ctx.send(embed=discord.Embed(description=f"Sistema de _economia_ do servidor foi **ativado**.", color=0x00ef5b))
 
-    @_Set.command(name="xplevel", aliases=["xp", "level"], no_pm=True)
+    @_Set.command(name="xplevel", aliases=["xp", "level"])
     @commands.guild_only()
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
@@ -104,18 +104,18 @@ class MySet(commands.Cog, name="Setar"):
         if self.check.guild(ctx.guild.id) is False:
             return await ctx.send(embed=discord.Embed(description=f"**{MongoDBI} {ctx.author.mention}, você precisa configurar o servidor na database.**", color=0xef0027))
         
-        if self.guild.get_systemXpLevel(ctx.guild.id) == "True":
-            self.guild.post_systemXpLevel(ctx.guild.id)
+        if self.guild.get_system_xp_level(ctx.guild.id) == "True":
+            self.guild.post_system_xp_level(ctx.guild.id)
             return await ctx.send(embed=discord.Embed(description=f"Sistema de _Xp/Level_ do servidor foi **desativado**.", color=0xef0027))
         
-        self.guild.post_systemXpLevel(ctx.guild.id)
+        self.guild.post_system_xp_level(ctx.guild.id)
         await ctx.send(embed=discord.Embed(description=f"Sistema de _Xp/Level_ do servidor foi **ativado**.", color=0x00ef5b))
 
-    @_Set.command(name="sobre", aliases=["about"], no_pm=True)
+    @_Set.command(name="sobre", aliases=["about"])
     @commands.guild_only()
     async def about(self, ctx, *, about:str="Sem descrição."):
-            self.user.post_about(ctx.guild.id, ctx.author.id, about)
-            await ctx.send(embed=discord.Embed(description=f"**Sobre alterado:** {about}", color=0x00ef5b))
+        self.user.post_about(ctx.guild.id, ctx.author.id, about)
+        await ctx.send(embed=discord.Embed(description=f"**Sobre alterado:** {about}", color=0x00ef5b))
 
     @_Set.command(name="auto-reação", aliases=["autoreacao", "autoreaçao", "autoreação", "reaçao", "reação", "auto-react"])
     @commands.bot_has_permissions(manage_messages=True)
@@ -123,10 +123,10 @@ class MySet(commands.Cog, name="Setar"):
     @commands.guild_only()
     async def autoreact(self, ctx, channel:discord.TextChannel=None):
         if channel is None:
-            self.guild.post_autoReact(ctx.guild.id, 0)
+            self.guild.post_auto_react(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{HintI} _Auto-React_ desativada!**", color=0xef0027))
         
-        self.guild.post_autoReact(ctx.guild.id, channel.id)
+        self.guild.post_auto_react(ctx.guild.id, channel.id)
         await ctx.send(embed=discord.Embed(description=f"**{HintI} _Auto-React_ ativada no canal: {channel.mention}!**", color=0x00ef5b))
 
     @_Set.command(name="logs")
@@ -134,17 +134,16 @@ class MySet(commands.Cog, name="Setar"):
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     async def logs(self, ctx, channel:discord.TextChannel=None):
-        
-            if self.check.guild(ctx.guild.id) is False:
-                return await ctx.send(embed=discord.Embed(description=f"**{MongoDBI} Me parece que seu servidor não está configurado na minha database. COMMAND: @Me!?**", color=0xef0027))
-            if channel is None:
-                self.guild.post_logs(ctx.guild.id, 0)
-                return await ctx.send(embed=discord.Embed(description=f"**{LogsI} _Logs_ desativado!**", color=0xef0027))
+        if self.check.guild(ctx.guild.id) is False:
+            return await ctx.send(embed=discord.Embed(description=f"**{MongoDBI} Me parece que seu servidor não está configurado na minha database. COMMAND: @Me!?**", color=0xef0027))
+        if channel is None:
+            self.guild.post_logs(ctx.guild.id, 0)
+            return await ctx.send(embed=discord.Embed(description=f"**{LogsI} _Logs_ desativado!**", color=0xef0027))
             
-            self.guild.post_logs(ctx.guild.id, channel.id)
-            await ctx.send(embed=discord.Embed(description=f"**{LogsI} _Logs_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
+        self.guild.post_logs(ctx.guild.id, channel.id)
+        await ctx.send(embed=discord.Embed(description=f"**{LogsI} _Logs_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
 
-    @_Set.command(name="bem-vindo", aliases=["welcome", "wel", "bemvindo"])
+    @_Set.command(name="bem_vindo", aliases=["welcome", "wel", "bemvindo"])
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
@@ -156,11 +155,11 @@ class MySet(commands.Cog, name="Setar"):
         self.guild.post_welcome(ctx.guild.id, channel.id)
         await ctx.send(embed=discord.Embed(description=f"**{WelI} _Welcome_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
 
-    @_Set.command(name="disco-rigido", aliases=["disco", "rigido", "harddisk"])
+    @_Set.command(name="hd", aliases=["disco_rigido", "harddisk"])
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    async def hard(self, ctx, channel:discord.TextChannel=None):
+    async def harddisk(self, ctx, channel:discord.TextChannel=None):
         if channel is None:
             self.guild.post_harddisk(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk_ desativado!**", color=0xef0027))
@@ -168,28 +167,28 @@ class MySet(commands.Cog, name="Setar"):
         self.guild.post_harddisk(ctx.guild.id, channel.id)
         await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
 
-    @_Set.command(name="disco-rigido-2", aliases=["disco2", "rigido2", "harddisk2"])
+    @_Set.command(name="hd_2", aliases=["disco_rigido_2", "harddisk_2", "harddisk2"])
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    async def hard2(self, ctx, channel:discord.TextChannel=None):
+    async def harddisk_2(self, ctx, channel:discord.TextChannel=None):
         if channel is None:
-            self.guild.post_harddisk2(ctx.guild.id, 0)
+            self.guild.post_harddisk_2(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk 2_ desativado!**", color=0xef0027))
         
-        self.guild.post_harddisk2(ctx.guild.id, channel.id)
+        self.guild.post_harddisk_2(ctx.guild.id, channel.id)
         await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk 2_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
 
-    @_Set.command(name="disco-rigido-3", aliases=["disco3", "rigido3", "harddisk3"])
+    @_Set.command(name="hd_3", aliases=["disco_rigido_3", "harddisk_3", "harddisk3"])
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
-    async def hard3(self, ctx, channel:discord.TextChannel=None):
+    async def harddisk_3(self, ctx, channel:discord.TextChannel=None):
         if channel is None:
-            self.guild.post_harddisk3(ctx.guild.id, 0)
+            self.guild.post_harddisk_3(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk 3_ desativado!**", color=0xef0027))
         
-        self.guild.post_harddisk3(ctx.guild.id, channel.id)
+        self.guild.post_harddisk_3(ctx.guild.id, channel.id)
         await ctx.send(embed=discord.Embed(description=f"**{HddI} _Harddisk 3_ ativado no canal: {channel.mention}!**", color=0x00ef5b))
 
     @_Set.command(name="contador", aliases=['counter'])
@@ -221,10 +220,10 @@ class MySet(commands.Cog, name="Setar"):
     @commands.guild_only()
     async def autorole(self, ctx, role: discord.Role=None):
         if role is None:
-            self.guild.post_autoRole(ctx.guild.id, 0)
+            self.guild.post_auto_role(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{ScienceI} _Auto-Role_ desativado!**", color=0xef0027))
         
-        self.guild.post_autoRole(ctx.guild.id, ctx.role.id)
+        self.guild.post_auto_role(ctx.guild.id, ctx.role.id)
         await ctx.send(embed=discord.Embed(description=f"**{ScienceI} _Auto-Role_ ativado no cargo: {role.name}!**", color=0x00ef5b))
 
     @_Set.command(name="mute-role", aliases=['muterole'])
@@ -233,10 +232,10 @@ class MySet(commands.Cog, name="Setar"):
     @commands.guild_only()
     async def muterole(self, ctx, role:discord.Role=None):
         if role is None:
-            self.guild.post_muteRole(ctx.guild.id, 0)
+            self.guild.post_mute_role(ctx.guild.id, 0)
             return await ctx.send(embed=discord.Embed(description=f"**{SilenceI} _Mute-Role_ desativado!**", color=0xef0027))
         
-        self.guild.post_muteRole(ctx.guild.id, role.id)
+        self.guild.post_mute_role(ctx.guild.id, role.id)
         await ctx.send(embed=discord.Embed(description=f"**{SilenceI} _Mute-Role_ ativado no cargo: {role.name}!**", color=0x00ef5b))
 
     @_Set.command(name="lista-branca", aliases=['listabranca', 'whitelist', 'whitel', 'lb', 'wl'])

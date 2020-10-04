@@ -1,5 +1,3 @@
-from json import load
-
 def getIcon(icon, react=False):
     """
         Bank

@@ -9,7 +9,7 @@ from itertools import cycle
 from asyncio import sleep
 from io import BytesIO
 from json import load
-
+from discord.ext import menus
 from Database import *
 
 import discord, requests
@@ -102,33 +102,6 @@ class Uptime:
 
         return string
 
-"""@tasks.loop(seconds=900)
-async def loop_covid():
-    await client.wait_until_ready()
-    
-    page = requests.get("https://www.worldometers.info/coronavirus/country/brazil/").text
-    soup = BeautifulSoup(page, "html.parser")
-
-    container = soup.findAll("div", {"class":"maincounter-number"})
-
-    casos = float(container[0].text.strip())
-    mortes = float(container[1].text.strip())
-    recuperados = float(container[2].text.strip())
-    ativos = casos - mortes - recuperados
-
-    newsapi = NewsApiClient(api_key=NEWSAPI)
-    news = newsapi.get_top_headlines(q='covid', language='pt', country='br')['articles'][0]
-
-    embed = discord.Embed(title=":flag_br: Covid-19", timestamp=datetime.utcnow())
-    embed.add_field(name=f"{i_covid}Casos Total:", value=f"```{casos}```", inline=False)
-    embed.add_field(name=f"{i_ativos}Casos Ativos:", value=f"```{ativos:.3f}```")
-    embed.add_field(name=f"{i_recuperados}Casos Recuperados:", value=f"```{recuperados}```")
-    embed.add_field(name=f"{i_mortos}Casos Fatais:", value=f"```{mortes:.3f}```")
-    embed.add_field(name=f"{i_news}Última notícia sobre Covid-19:", value=f"```{news['title']}```[Link da notícia]({news['url']})", inline=False)
-
-    message = await client.get_channel(708739143446036590).fetch_message(708742101529002015)
-    await message.edit(embed=embed)"""
-
 @tasks.loop(seconds=10)
 async def loop_status():
     await client.change_presence(activity=discord.Game(next(client.status)))
@@ -184,7 +157,7 @@ class MyClient(commands.Cog, name="Client"):
                 print("[?] Servidor: %s(%s) de %s(%s), foi configurado na database! [Inicialização]" % (member.name, member.id, guild.owner.name, guild.owner.id))
 
             if self.check.bot(guild.id, self.client.user.id) is False:
-                self.client.create(guild.id, self.client.user.id)
+                self.bot.create(guild.id, self.client.user.id)
 
             for member in guild.members:
                 if check_is_bot(member):
@@ -195,20 +168,18 @@ class MyClient(commands.Cog, name="Client"):
         await self.modules_start()
 
     async def on_message(self, ctx):
-        if not ctx.author.id == self.client.user.id:
+        if self.check.guild(ctx.guild.id) and not ctx.author.id == self.client.user.id and ctx.author.bot == False:
+            
+            if self.guild.get_auto_react(ctx.guild.id) == ctx.channel.id: # Sistema de auto react
+                await ctx.add_reaction('👍')
+                await ctx.add_reaction('👎')
 
-            if self.check.guild(ctx.guild.id):
-                if self.guild.get_autoReact(ctx.guild.id).text == ctx.channel.id: #Comando de auto react
-                    await ctx.add_reaction('👍')
-                    await ctx.add_reaction('👎')
+            if self.check.user(ctx.guild.id, ctx.author.id) == True:
+                if not self.guild.get_system_xp_level(ctx.guild.id) == "False": # Sistema de LEVEL & XP
+                    self.user.post_xp(ctx.guild.id, ctx.author.id)
+                    self.user.post_level(ctx.guild.id, ctx.author.id)
 
-                if not self.guild.get_systemXpLevel(ctx.guild.id).text == "False": #Comando de LEVEL & XP
-                    if self.check.user(ctx.guild.id, ctx.author.id) == True:
-                        self.user.post_xp(ctx.guild.id, ctx.author.id)
-                        self.user.post_level(ctx.guild.id, ctx.author.id)
-
-                if self.check.user(ctx.guild.id, ctx.author.id) == True:
-                    self.user.post_messages(ctx.guild.id, ctx.author.id)
+                self.user.post_messages(ctx.guild.id, ctx.author.id) # Sistema de contagem de mensagens
 
     async def on_guild_join(self, guild):
         if self.check.guild(guild.id) is False:
@@ -223,7 +194,7 @@ class MyClient(commands.Cog, name="Client"):
             self.user.create(member.guild.id, member.id)
 
         if self.check.guild(member.guild.id):
-            auto_role = self.guild.get_autoRole(member.guild.id)
+            auto_role = self.guild.get_auto_role(member.guild.id)
             counter  = self.guild.get_counter(member.guild.id)
             welcome  = self.guild.get_welcome(member.guild.id)
 
@@ -361,8 +332,8 @@ class MyClient(commands.Cog, name="Client"):
                 embed = discord.Embed(description=f"[{MsgEditI} Logs - {after.channel.name}](https://discordapp.com/channels/{after.guild.id}/{after.channel.id}/{after.id})", color=0x444444, timestamp=datetime.utcnow())
                 embed.add_field(name=f"{NameI}Nome:", value=f"```{after.author.name}```")
                 embed.add_field(name=f"{IdI}ID:", value=f"```{after.author.id}```")
-                embed.add_field(name=f"{MsgI}Msg Original:", value=f"```{after.content}```", inline=False)
-                embed.add_field(name=f"{MsgEdit2I}Msg Editada:", value=f"```{before.content}```", inline=False)
+                embed.add_field(name=f"{MsgI}Mensagem Original:", value=f"```{after.content}```", inline=False)
+                embed.add_field(name=f"{MsgEdit2I}Mensagem Editada:", value=f"```{before.content}```", inline=False)
                 return await self.client.get_channel(logs).send(embed=embed)
 
     async def on_message_delete(self, message):
@@ -379,7 +350,7 @@ class MyClient(commands.Cog, name="Client"):
                 embed = discord.Embed(title=f"{MsgDelI} Logs - {message.channel.name}", color=0x444444, timestamp=datetime.utcnow())
                 embed.add_field(name=f"{NameI}Nome:", value=f"```{message.author.name}```")
                 embed.add_field(name=f"{IdI}ID:", value=f"```{message.author.id}```")
-                embed.add_field(name=f"{MsgI}Mensagem:", value=f"```{message.content}```", inline=False)
+                embed.add_field(name=f"{MsgI}Mensagem Apagada:", value=f"```{message.content}```", inline=False)
                 return await self.client.get_channel(Logs).send(embed=embed)
 
     async def on_voice_state_update(self, member, before, after):
@@ -398,7 +369,6 @@ class MyClient(commands.Cog, name="Client"):
                     embed.add_field(name=f"{IdI}ID:", value=f"```{member.id}```")
                     embed.add_field(name=f"{VoiceI}Canal:", value=f"```{before.channel.name}```", inline=False)
                     await self.client.get_channel(Logs).send(embed=embed)
-
 
 class MyCommand(commands.Cog, name="Command"):
     def __init__(self, client):
@@ -471,14 +441,6 @@ client.add_listener(MyClient(client).on_message_delete)
 client.add_listener(MyClient(client).on_message_edit)
 
 client.add_listener(MyClient(client).on_voice_state_update)
-"""
-
-
-client.add_listener(MyClient(client).on_raw_reaction_add)
-client.add_listener(MyClient(client).on_raw_reaction_remove)
-
-loop_covid.start()
-"""
 
 loop_status.start()
 client.run(TOKEN, bot=True, reconnect=True)

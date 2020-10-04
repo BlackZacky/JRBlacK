@@ -11,9 +11,6 @@ import nmap3
 class MyHacking(commands.Cog, name="Hacking"):
     def __init__(self, client):
         self.client = client
-        self.check = database.check()
-        self.guild = database.guild()
-        self.user  = database.user()
         self.nmap  = nmap3.Nmap()
 
     @commands.group(name="nmap", aliases=["nmp", "scan"], usage="[p]nmap [sub comando]")
@@ -63,7 +60,6 @@ class MyHacking(commands.Cog, name="Hacking"):
                 embed.add_field(name="Email:", value=f"```{whois_get.emails}```")
  
 
- 
         if not "null" in whois_get.org:
             embed.add_field(name="Organização:", value=f"```{whois_get.org}```")
 

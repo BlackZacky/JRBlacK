@@ -99,7 +99,7 @@ class MyHardDisk(commands.Cog, name="Disco Rigido"):
     @commands.command()
     @commands.guild_only()
     async def harddisk2(self, ctx):
-        ChannelHard = self.guild.get_harddisk2(ctx.guild.id)
+        ChannelHard = self.guild.get_harddisk_2(ctx.guild.id)
         if ChannelHard == 0:
             return await ctx.send(embed=discord.Embed(description="Comando HardDisk está desativado.", color=0xef0027))
 
@@ -173,7 +173,7 @@ class MyHardDisk(commands.Cog, name="Disco Rigido"):
     @commands.command()
     @commands.guild_only()
     async def harddisk3(self, ctx):
-        ChannelHard = self.guild.get_harddisk3(ctx.guild.id)
+        ChannelHard = self.guild.get_harddisk_3(ctx.guild.id)
         if ChannelHard == 0:
             return await ctx.send(embed=discord.Embed(description="Comando HardDisk está desativado.", color=0xef0027))
 

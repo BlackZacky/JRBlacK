@@ -8,7 +8,7 @@ check = database.check()
 
 async def whitelist(ctx):
     if check.guild(ctx.guild.id):
-        return guild.get_whitelist(ctx.guild.id) == ctx.channel.id or guild.get_whitelist(ctx.guild.id) == 0
+        return guild.get_whitelist(ctx.guild.id) == ctx.channel.id
     return False
 
 async def configure_database(ctx):

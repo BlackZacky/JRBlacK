@@ -10,3 +10,5 @@ beautifulsoup4
 git+https://github.com/Rapptz/discord-ext-menus.git
 newsapi-python
 python-whois
+nmap3
+aiohttp
