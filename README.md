@@ -59,12 +59,12 @@ Eu utilizo algumas bibliotecas para facilitar o desenvolvimento e melhorar a exp
 
 | Bibliotecas | Link's |
 | ------ | ------ |
-| discor py | [pypi][url_discordpy] |
-| requests | [pypi][url_requests] |
+| discord py | [pypi][url_discordpy] |
+| aiohttp | [pypi][url_aiohttp] |
 | datetime | [docs][url_datetime] |
 | pymongo | [pypi][url_pymongo] |
 | psutil | [pypi][url_psutil] |
-| pillow | [ppypi][url_pillow] |
+| pillow | [pypi][url_pillow] |
 | wikipedia | [pypi][url_wikipedia] |
 | humanize | [pypi][url_humanize] |
 | beautifulsoup4 | [pypi][url_beautifulsoup4] |
@@ -90,7 +90,7 @@ MIT
 **Software livre, claro que sim!!**
 
   [url_discordpy]: <https://pypi.org/project/discord.py/>
-  [url_requests]: <https://pypi.org/project/requests/>
+  [url_aiohttp]: <https://pypi.org/project/aiohttp/>
   [url_datetime]: <https://docs.python.org/3/library/datetime.html>
   [url_pymongo]: <https://pypi.org/project/pymongo/>
   [url_psutil]: <https://pypi.org/project/psutil/>

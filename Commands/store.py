@@ -89,7 +89,7 @@ class MyStore(commands.Cog):
             except TimeoutError:
                 return await message.delete()
 
-            if int(message_author.content) == 154:
+            if message_author.content == "154":
                 if "Background 1" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 10000:
@@ -99,7 +99,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 1")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 413:
+            elif message_author.content == "413":
                 if "Background 2" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 12000:
@@ -109,7 +109,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 2")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 456:
+            elif message_author.content == "456":
                 if "Background 3" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 13000:
@@ -119,7 +119,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 3")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 867:
+            elif message_author.content == "867":
                 if "Background 4" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 14000:
@@ -129,7 +129,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 4")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 345:
+            elif message_author.content == "345":
                 if "Background 5" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 15000:
@@ -139,7 +139,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 5")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 978:
+            elif message_author.content == "978":
                 if "Background 6" in self.user.get_inventory_background(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_storeError} Você já tem este **papel de parede**."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 16000:
@@ -149,7 +149,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_background(ctx.guild.id, ctx.author.id, "Background 6")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_store} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 279:
+            elif message_author.content == "279":
                 if "GLOCK" in self.user.get_inventory_weapon(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_gunStoreError} Está arma você já possui."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 60000:
@@ -159,7 +159,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_weapon(ctx.guild.id, ctx.author.id, "GLOCK")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_gunStore} Compra efetuada com sucesso!"), delete_after=300.0)
             
-            elif int(message_author.content) == 191:
+            elif message_author.content == "191":
                 if "M1911" in self.user.get_inventory_weapon(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_gunStoreError} Está arma você já possui."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 70000:
@@ -169,7 +169,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_weapon(ctx.guild.id, ctx.author.id, "M1911")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_gunStore} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 762:
+            elif message_author.content == "762":
                 if "AK47" in self.user.get_inventory_weapon(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_gunStoreError} Está arma você já possui."))
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 110000:
@@ -179,7 +179,7 @@ class MyStore(commands.Cog):
                 self.user.post_inventory_weapon(ctx.guild.id, ctx.author.id, "AK47")
                 return await ctx.send(embed=discord.Embed(color=0x00ef5b, description=f"{i_gunStore} Compra efetuada com sucesso!"), delete_after=300.0)
 
-            elif int(message_author.content) == 556:
+            elif message_author.content == "556":
                 if "M4A1" in self.user.get_inventory_weapon(ctx.guild.id, ctx.author.id):
                     return await message.edit(embed=discord.Embed(color=0xef0027, description=f"{i_gunStoreError} Está arma você já possui."), delete_after=300.0)
                 if not self.user.get_money_hand(ctx.guild.id, ctx.author.id) >= 115000:

@@ -51,7 +51,7 @@ VoiceUpI   = "<:voiceup:574710363560476709>"
 VoiceDownI = "<:voicedown:574710364000878607>"
 
 if SHARD:
-    client = commands.AutoShardedBot(shard_count=2, shard_id=(1,2), command_prefix=PREFIX_DEFAULT, owner_id=OWNERID, case_insensitive=True)
+    client = commands.AutoShardedBot(shard_count=10, shard_id=(1,2,3,4,5,6), command_prefix=PREFIX_DEFAULT, owner_id=OWNERID, case_insensitive=True)
 else:
     client = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX_DEFAULT), owner_id=OWNERID, case_insensitive=True)
 
