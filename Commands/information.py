@@ -6,7 +6,7 @@ from os import getpid, system
 from random import randint
 from io import BytesIO
 
-from Database import OMBDBAPI, NEWSAPI, OMBDBAPI
+from Database import OMBDBAPI, NEWSAPI, OMBDBAPI, WEATHERAPI
 from Database import database
 
 from . import sub_commands
@@ -14,8 +14,9 @@ from Commands.Utils.icons import getIcon
 
 import discord, psutil
 import aiohttp, time
-import glob, main
+import glob
 import wikipedia
+import requests
 
 NameI         = getIcon("Name")
 IdI           = getIcon("ID")
@@ -160,7 +161,6 @@ class MyInformation(commands.Cog, name="Informações"):
         self.client = client
         self.ram    = MemoryRam()
         self.request= RequestApi()
-        self.uptime = main.Uptime()
         self.guild  = database.guild()
         self.user   = database.user()
         self.check  = database.check()
@@ -196,7 +196,7 @@ class MyInformation(commands.Cog, name="Informações"):
             member = ctx.author
         
         await ctx.send(embed=discord.Embed(description=f"Avatar de {member.mention}, [**clique aqui**]({member.avatar_url}) para abrir no navegador.").set_image(url=member.avatar_url))
- 
+
     @_info.command(usage="[p]info spotify [membro]")
     @commands.guild_only()
     async def spotify(self, ctx, user:discord.Member=None):
@@ -240,45 +240,6 @@ class MyInformation(commands.Cog, name="Informações"):
 
     @_info.command()
     @commands.guild_only()
-    async def bot(self, ctx):
-        versionpy = str(python_version())
-
-        if versionpy == "3.7.4":
-            pylink = "https://www.python.org/downloads/release/python-374/"
-        elif versionpy == "3.7.1":
-            pylink = "https://www.python.org/downloads/release/python-371/"
-        else:
-            pylink = "https://www.python.org/downloads/release/python-366/"
-
-        modules_count = ([f for f in glob.glob("Commands/*.py")])
-        espace = "⠀⠀⠀⠀⠀⠀"
-
-        embedbotin = discord.Embed(color=5577355, timestamp=datetime.utcnow())
-        embedbotin.set_author(name=f"{ctx.bot.user.name} - MyInfo", icon_url=ctx.bot.user.avatar_url)
-        embedbotin.add_field(name=f"{NameI}Meu nome:", value=f'[**`{ctx.bot.user.name}`**](https://discordapp.com/api/oauth2/authorize?client_id=469709685650358292&permissions=8&scope=bot)', inline=True)
-        embedbotin.add_field(name=f'{IdI}Meu ID:', value=f'[**`{ctx.bot.user.id}`**](https://discordapp.com/api/oauth2/authorize?client_id=469709685650358292&permissions=8&scope=bot)', inline=True)
-        embedbotin.add_field(name=f'{AvatarI}Meu avatar:', value=f'[**`Link`**]({ctx.bot.user.avatar_url})', inline=True)
-        embedbotin.add_field(name=f'{CalendarI}Fui criado em:', value=f'**`{ctx.bot.user.created_at.strftime("%d %b %Y")}` `{ctx.bot.user.created_at.strftime("%H:%M")}`**', inline=True)
-        embedbotin.add_field(name=f'{MortyI}Membros:', value=f'**`{len(ctx.bot.users)} Membro(s)`**', inline=True)
-        embedbotin.add_field(name=f'{GuildsI}Servidores:', value=f'**`{str(len(ctx.bot.guilds))} Server(s)`**', inline=True)
-        embedbotin.add_field(name=f'{CodeI}Fui programado em:', value=f'[{PythonI}](https://www.python.org/)[{PhpI}](http://www.php.net/)', inline=True)
-        embedbotin.add_field(name=f'{DiscordI}Versão discord:', value=f'[**`{discord.__version__}`**](https://discordapp.com)', inline=True)
-        embedbotin.add_field(name=f'{PythonI}Versão python:', value=f'[**`{versionpy}`**]({pylink})')
-        embedbotin.add_field(name=f'{DeveloperI}Desenvolvedor:', value='<@416242067123994624>')
-        embedbotin.add_field(name=f'{RamI}Ram:', value=f'**`{self.ram.process_python()}`**', inline=True)
-        #embedbotin.add_field(name='Minha versão:', value=f'``{cmd_used}``',inline=True)
-        embedbotin.add_field(name=f'{CommandsI}Comandos:', value=f'**`{len(ctx.bot.all_commands)}`**', inline=True)
-        embedbotin.add_field(name=f'{PingI}Ping:', value=f'[**`{int(ctx.bot.latency*1000)}ms`**](https://status.discordapp.com/)', inline=True)
-        embedbotin.add_field(name=f'{TimeI}Tempo ligado:', value=f'**`{self.uptime.numbers()}`**', inline=True)
-        embedbotin.add_field(name=f'{ModulesI}Módulos:', value=f'**`{len(modules_count)}`**')
-        #embedbotin.add_field(name='⠀', value='⠀', inline=True)
-        embedbotin.add_field(name='🔗Links:', value=f'{Taverna Dos Hackers}**| Forum:** [**`link`**](https://forum.tavernadoshackers.com.br){espace}{SettingsI}**| Suporte:** [**`link`**](https://discord.gg/dXDSZjF)')
-        embedbotin.set_footer(text='2018 JRBlacK', icon_url=ctx.author.avatar_url)
-        
-        await ctx.send(embed=embedbotin)
-
-    @_info.command()
-    @commands.guild_only()
     async def stats(self, ctx):
         await ctx.send(f"""```asciidoc
 [Guild Stats]
@@ -287,7 +248,7 @@ class MyInformation(commands.Cog, name="Informações"):
   Canais             :: {len(ctx.guild.text_channels) + len(ctx.guild.voice_channels)}
 
 [Bot Stats]
-  Tempo em atividade :: {self.uptime.total()}
+  Tempo em atividade :: a
   Bot modúlos ext    :: 6
   Bot comandos       :: {len(ctx.bot.all_commands)}
   Bot latência       :: {self.client.latency * 1000:.2f} ms
@@ -310,21 +271,10 @@ class MyInformation(commands.Cog, name="Informações"):
             return await ctx.send(embed=discord.Embed(description=f"{BankI} Para este comando funcionar é necessario que o **Sistema de Economia** esteja ativo.", color=0xef0027).set_footer(text="Para ativar use o comando: [p]set economy"))
         if self.check.user(ctx.guild.id, ctx.author.id) == "False":
             return await ctx.send(embed=discord.Embed(description=f"{BankI} Para este comando funcionar é necessario que você esteja configurado na minha database.", color=0xef0027).set_footer(text=f"Para configurar use o comando: {self.client.user.mention} !!"))
-            
-        Status = Image.open("Utils/Icons/offline.png").resize((55, 55))
-        if str(ctx.author.status) == "online":
-            Status = Image.open("Utils/Icons/online.png").resize((55, 55))
-        elif str(ctx.author.status) == "offline":
-            Status = Image.open("Utils/Icons/offline.png").resize((55, 55))
-        elif str(ctx.author.status) == "dnd":
-            Status = Image.open("Utils/Icons/dnd.png").resize((55, 55))
-        elif str(ctx.author.status) == "idle":
-            Status = Image.open("Utils/Icons/idle.png").resize((55, 55))
 
-        Profile = Image.open("Utils/Images/profile.png")
-        Ball   = Image.open("Utils/Icons/ball.png").resize((58, 59))
-        Font  = ImageFont.truetype("Utils/Fonts/Roboto-Thin.ttf", 25)
-        Font2 = ImageFont.truetype("Utils/Fonts/Roboto-Thin.ttf", 18)
+        Profile = Image.open("Commands/Utils/Utils_pil_edit/Images/profile.png")
+        Font  = ImageFont.truetype("Commands/Utils/Utils_pil_edit/Fonts/Roboto-Thin.ttf", 25)
+        Font2 = ImageFont.truetype("Commands/Utils/Utils_pil_edit/Fonts/Roboto-Thin.ttf", 18)
 
         backgroundI = self.user.get_background(ctx.guild.id, ctx.author.id)
         if backgroundI == "False":
@@ -332,9 +282,9 @@ class MyInformation(commands.Cog, name="Informações"):
 
         Background = Image.open(BytesIO(requests.get(backgroundI).content))
         Background.paste(Profile, (0, 0), Profile)
-        Background.save("Utils/Images/profileF.png")
+        Background.save("Commands/Utils/Utils_pil_edit/Images/profileF.png")
 
-        ProfileF = Image.open("Utils/Images/profileF.png")
+        ProfileF = Image.open("Commands/Utils/Utils_pil_edit/Images/profileF.png")
 
         Avatar = Image.open(BytesIO(requests.get(ctx.author.avatar_url).content))
         Avatar = Avatar.resize((151, 145))
@@ -347,7 +297,7 @@ class MyInformation(commands.Cog, name="Informações"):
 
         Output = ImageOps.fit(Avatar, Mask.size, centering=(0.5, 0.5))
         Output.putalpha(Mask)
-        Output.save("Utils/Images/avatar.png")
+        Output.save("Commands/Utils/Utils_pil_edit/Images/avatar.png")
 
         MoneyBank = self.user.get_money_bank(ctx.guild.id, ctx.author.id)
         MoneyHand = self.user.get_money_hand(ctx.guild.id, ctx.author.id)
@@ -362,19 +312,31 @@ class MyInformation(commands.Cog, name="Informações"):
         else:
             Write.text(xy=(253, 13), text=f"{ctx.author.name}", fill=(255, 255, 255), font=Font2)
 
-        Write.text(xy=(152, 148), text=f"R${MoneyBank+MoneyHand}", fill=(255, 255, 255), font=Font)
+        Write.text(xy=(152, 148), text=f"${MoneyBank+MoneyHand}", fill=(255, 255, 255), font=Font)
         Write.text(xy=(55, 186), text=str(Xp), fill=(255, 255, 255), font=Font)
         Write.text(xy=(158, 225), text=str(Level), fill=(255, 255, 255), font=Font)
         Write.text(xy=(290, 151), text=f"{(About)[:30]}\n{(About)[30:60]}\n{(About)[60:90]}\n{(About)[90:120]}\n{(About)[120:150]}", fill=(255, 255, 255), font=Font2)
 
         Avatar = Avatar.crop((0, 0, 150, 115))
         ProfileF.paste(Avatar, (30, 18), Avatar)
-        ProfileF.paste(Ball, (142, 96), Ball)
-        ProfileF.paste(Status, (144, 98), Status)
-        ProfileF.save("Utils/Images/profileF.png")
 
-        await ctx.send(file=discord.File("Utils/Images/profileF.png", filename=f"Perfil-de-{ctx.author.name}.png")) #embed=discord.Embed(color=0x444444).set_image(url=f"attachment://Perfil-de-{ctx.author.name}.png"))
-        system(f"rm Utils/Images/avatar.png && rm Utils/Images/profileF.png")
+        if str(ctx.author.status) == "online":
+            Status = Image.open("Commands/Utils/Utils_pil_edit/Icons/online.png").resize((55, 55))
+            ProfileF.paste(Status, (144, 98), Status)
+        elif str(ctx.author.status) == "offline":
+            Status = Image.open("Commands/Utils/Utils_pil_edit/Icons/invisible.png").resize((55, 55))
+            ProfileF.paste(Status, (144, 98), Status)
+        elif str(ctx.author.status) == "dnd":
+            Status = Image.open("Commands/Utils/Utils_pil_edit/Icons/dnd.png").resize((55, 55))
+            ProfileF.paste(Status, (144, 98), Status)
+        elif str(ctx.author.status) == "idle":
+            Status = Image.open("Commands/Utils/Utils_pil_edit/Icons/idle.png").resize((55, 55))
+            ProfileF.paste(Status, (144, 98), Status)
+
+        ProfileF.save("Commands/Utils/Utils_pil_edit/Images/profileF.png")
+
+        await ctx.send(file=discord.File("Commands/Utils/Utils_pil_edit/Images/profileF.png", filename=f"Perfil-de-{ctx.author.name}.png")) #embed=discord.Embed(color=0x444444).set_image(url=f"attachment://Perfil-de-{ctx.author.name}.png"))
+        system(f"rm Commands/Utils/Utils_pil_edit/Images/avatar.png && rm Commands/Utils/Utils_pil_edit/Images/profileF.png")
 
     @_info.command(aliases=["usuário", "usuario", "my"], usage="[p]info [usuário/user] [Membro: Mention/ID] or [None]")
     @commands.guild_only()
@@ -514,46 +476,46 @@ class MyInformation(commands.Cog, name="Informações"):
         if not request_status == 200:
             return ctx.send(embed=discord.Embed(description=f"{ImdbI} API Indisponível no momento!", color=0xc63939), delete_after=30)
 
-        genre = str(request_code["Genre"]) \ 
-        .replace("Horror", f"{HorrorI}Terror") \ 
+        genre = str(request_code["Genre"]) \
+        .replace("Horror", f"{HorrorI}Terror") \
         .replace("Animation", f"{AnimationI}Animação") \
-        .replace("Adventure", f"{AdventureI}Aventura") \ 
-        .replace("Art cinema", "Cinema de arte") \ 
-        .replace("Stained", "Manchado") \ 
-        .replace("Catastrophe cinema", "Cinema catástrofe") \ 
-        .replace("Action", f"{ActionI}Ação") \ 
-        .replace("Comedy", f"{ComedyI}Comédia") \ 
-        .replace("Romantic comedy", f"{ComedyI}Comédia romântica") \ 
-        .replace("Dramatic comedy", f"{DramaI}Comédia dramática") \ 
-        .replace("Dance", f"{MusicalI}Dança") \ 
-        .replace("Documentary", f"{DocumentaryI}Documentário") \ 
-        .replace("Docufiction", f"{ScifiI}Docuficção") \ 
-        .replace("Drama", f"{DramaI}Drama") \ 
-        .replace("Espionage", f"{SpyI}Espionagem") \ 
-        .replace("Sci-Fi", f"{ScifiI}Ficção científica") \ 
-        .replace("War Movies", f"{WarI}Guerra") \ 
-        .replace("Musical", f"{MusicalI}Músical") \ 
-        .replace("Police movie", f"{AgentI}Policial") \ 
-        .replace("Romance", f"{RomanceI}Romance") \ 
-        .replace("Sitcom", "Seriado") \ 
+        .replace("Adventure", f"{AdventureI}Aventura") \
+        .replace("Art cinema", "Cinema de arte") \
+        .replace("Stained", "Manchado") \
+        .replace("Catastrophe cinema", "Cinema catástrofe") \
+        .replace("Action", f"{ActionI}Ação") \
+        .replace("Comedy", f"{ComedyI}Comédia") \
+        .replace("Romantic comedy", f"{ComedyI}Comédia romântica") \
+        .replace("Dramatic comedy", f"{DramaI}Comédia dramática") \
+        .replace("Dance", f"{MusicalI}Dança") \
+        .replace("Documentary", f"{DocumentaryI}Documentário") \
+        .replace("Docufiction", f"{ScifiI}Docuficção") \
+        .replace("Drama", f"{DramaI}Drama") \
+        .replace("Espionage", f"{SpyI}Espionagem") \
+        .replace("Sci-Fi", f"{ScifiI}Ficção científica") \
+        .replace("War Movies", f"{WarI}Guerra") \
+        .replace("Musical", f"{MusicalI}Músical") \
+        .replace("Police movie", f"{AgentI}Policial") \
+        .replace("Romance", f"{RomanceI}Romance") \
+        .replace("Sitcom", "Seriado") \
         .replace("Thriller", f"{ThrillerI}Suspense")
 
         GeneroI = str(request_code["Genre"]) \
         .replace("Horror", f"{HorrorI}") \
-        .replace("Animation", f"{AnimationI}") \ 
-        .replace("Adventure", f"{AdventureI}") \ 
-        .replace("Action", f"{ActionI}") \ 
+        .replace("Animation", f"{AnimationI}") \
+        .replace("Adventure", f"{AdventureI}") \
+        .replace("Action", f"{ActionI}") \
         .replace("Comedy", f"{ComedyI}") \
-        .replace("Romantic comedy", f"{ComedyI}") \ 
+        .replace("Romantic comedy", f"{ComedyI}") \
         .replace("Dramatic comedy", f"{DramaI}") \
         .replace("Dance", f"{MusicalI}") \
-        .replace("Documentary", f"{DocumentaryI}") \ 
-        .replace("Docufiction", f"{ScifiI}") \ 
+        .replace("Documentary", f"{DocumentaryI}") \
+        .replace("Docufiction", f"{ScifiI}") \
         .replace("Drama", f"{DramaI}") \
         .replace("Espionage", f"{SpyI}") \
-        .replace("Sci-Fi", f"{ScifiI}") \ 
-        .replace("War Movies", f"{WarI}") \ 
-        .replace("Musical", f"{MusicalI}") \ 
+        .replace("Sci-Fi", f"{ScifiI}") \
+        .replace("War Movies", f"{WarI}") \
+        .replace("Musical", f"{MusicalI}") \
         .replace("Police movie", f"{AgentI}") \
         .replace("Romance", f"{RomanceI}") \
         .replace("Thriller", f"{ThrillerI}")
@@ -651,7 +613,7 @@ class MyInformation(commands.Cog, name="Informações"):
 
     @commands.command(aliases=["wiki", "wkpd"])
     @commands.guild_only()
-    async def wikipedia(self, ctx, query:str=None):
+    async def wikipedia(self, ctx, *, query:str=None):
         if query is None:
             return await ctx.send(embed=discord.Embed(description=f"{WikiI}Você não informou o que deseja...", color=0xef0027), delete_after=30)
 

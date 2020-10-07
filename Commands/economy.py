@@ -197,7 +197,7 @@ class MyBank(commands.Cog, name="Banco"):
             if self.guild.get_system_economy(ctx.guild.id) == 'False':
                 return await ctx.send(embed=discord.Embed(description=f"{i_bank} Sistema de economia está desativado neste grupo.", color=0xef0027).set_footer(text="Para tivar use o comando: [p]set economy"))
 
-            await ctx.send(embed=discord.Embed(title=f"{i_rank}Banco - {ctx.guild.name}", color=0x444444, description=self.user.get_moneyRank(ctx.guild.id, ctx.author.id)))
+            await ctx.send(embed=discord.Embed(title=f"{i_rank}Banco - {ctx.guild.name}", color=0x444444, description=self.user.get_bank_rank(ctx.guild.id, ctx.author.id)))
         else:
             return await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention}, você não pode executar comandos nesse chat.", color=0xef0027), delete_after=15)
 

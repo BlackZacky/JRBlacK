@@ -4,15 +4,16 @@ from datetime import datetime
 from Database import *
 from . import sub_commands
 
+import asyncio
 import discord
 import whois
-import nmap3
+import nmap
 
 class MyHacking(commands.Cog, name="Hacking"):
     def __init__(self, client):
         self.client = client
-        self.nmap  = nmap3.Nmap()
-
+        self.nmap = nmap.PortScanner()
+    
     @commands.group(name="nmap", aliases=["nmp", "scan"], usage="[p]nmap [sub comando]")
     @commands.guild_only()
     async def _nmap(self, ctx):
@@ -22,13 +23,33 @@ class MyHacking(commands.Cog, name="Hacking"):
     @_nmap.command(aliases=["tp"], usage="[p]nmap top_ports [ip]")
     @commands.guild_only()
     async def top_ports(self, ctx, host_ip):
-        results = self.nmap.scan_top_ports(gethostbyname(host_ip))
+        get_host_ip = gethostbyname(host_ip)
 
-        nmap_scan_list = []
-        for x in results[gethostbyname(host_ip)]:
-            nmap_scan_list.append(f"{x['portid']}  {x['protocol']}  {x['state']}  {x['service']['name']}")
+        self.nmap.scan(get_host_ip)
+        await asyncio.sleep(0.1)
 
-        await ctx.send(embed=discord.Embed(description="**```{}```**".format("\n".join(nmap_scan_list))))
+        infos = {}
+        for host in self.nmap.all_hosts():
+            infos["host"] = {"ip": host, "name": self.nmap[host].hostname(), "state": self.nmap[host].state()}
+            for proto in self.nmap[host].all_protocols():
+                infos["protocol"] = proto
+                lport = self.nmap[host][proto].keys()
+                infos["ports"] = []
+                for port in lport:
+                    infos["ports"].append('port : %s\tstate : %s' % (port, self.nmap[host][proto][port]['state']))
+
+        embed = discord.Embed(description="""
+----------------------------------------------------
+Host : %s (%s)
+State : %s
+----------------------------------------------------
+Protocol : %s
+
+%s
+
+""" % (infos['host']["ip"], infos['host']['name'], infos['host']['state'], infos['protocol'], '\n'.join(infos['ports'])))
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.guild_only()
