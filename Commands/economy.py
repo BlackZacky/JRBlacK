@@ -75,17 +75,18 @@ class MyBank(commands.Cog, name="Banco"):
             Hand = self.user.get_money_hand(ctx.guild.id, ctx.author.id)
 
             #newMoneyPorcentage = Money - (Money * 10 / 100)
-            embed = discord.Embed(title=f"{i_deposit} Banco - {ctx.guild.name}", color=0xef0027, timestamp=datetime.utcnow())
 
             if Hand >= Money:
                 self.user.post_money_hand(ctx.guild.id, ctx.author.id, -Money)
                 self.user.post_money_bank(ctx.guild.id, ctx.author.id, Money)
-                
+
+                embed = discord.Embed(title=f"{i_deposit} Banco - {ctx.guild.name}", color=0x00ef5b, timestamp=datetime.utcnow())                
                 embed.add_field(name=f"{i_name}Nome:", value=f'**```{ctx.author.name}```**')
                 embed.add_field(name=f"{i_id}ID:", value=f'**```{ctx.author.id}```**')
                 embed.add_field(name=f"{i_bank}Banco:", value=f'**```${Money}```**', inline=False)
 
             elif Hand < Money:
+                embed = discord.Embed(title=f"{i_deposit} Banco - {ctx.guild.name}", color=0xef0027, timestamp=datetime.utcnow())                
                 embed.add_field(name=f"{i_name}Nome:", value=f'**```{ctx.author.name}```**')
                 embed.add_field(name=f"{i_id}ID:", value=f'**```{ctx.author.id}```**')
                 embed.add_field(name=f"{i_bank}Banco:", value="**```Abstinência do valor requisitado!```**", inline=False)

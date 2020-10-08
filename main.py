@@ -114,10 +114,10 @@ async def wait_for_bot():
 class MyClient(commands.Cog, name="Client"):
     def __init__(self, client):
         self.client   = client
-        self.check    = database.check(self.client)
-        self.guild    = database.guild(self.client)
-        self.user     = database.user(self.client)
-        self.bot      = database.bot(self.client)
+        self.check    = database.check()
+        self.guild    = database.guild()
+        self.user     = database.user()
+        self.bot      = database.bot()
         self.uptime   = Uptime()
         self.json  = {
              "E0":"<:zero:571424008084389905>",
@@ -184,10 +184,12 @@ class MyClient(commands.Cog, name="Client"):
     async def on_guild_join(self, guild):
         if self.check.guild(guild.id) is False:
             self.guild.create(guild.id, guild.owner.id)
+            self.bot.create(guild.id, self.client.user.id)
 
     async def on_guild_remove(self, guild):
         if self.check.guild(guild.id) is True:
             self.guild.delete(guild.id)
+            self.bot.delete(guild.id)
 
     async def on_member_join(self, member):
         if self.check.user(member.guild.id, member.id):
@@ -376,16 +378,25 @@ class MyCommand(commands.Cog, name="Command"):
         self.uptime = Uptime
 
     @client.check
-    async def globally_check_command(ctx):
-        guild = database.guild()
+    async def globally_check_command(self, ctx):
         check = database.check()
- 
+        guild = database.guild()
+        user  = database.user()
+        bot   = database.bot()
+
         if check.guild(ctx.guild.id) == False:
-            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, você precisa configurar o servidor na database.", color=0xef0027))
+            guild.create(ctx.guild.id, ctx.guild.owner.id)
+            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, Por favor! Execute o comando novamente. Ocorreu um erro! Seu servidor não estava configurado na minha database. Mas agora está!", color=0xef0027))
             return False
 
         if check.user(ctx.guild.id, ctx.author.id) == False:
-            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, você precisa configurar seu usuário na database.", color=0xef0027))
+            user.create(ctx.guild.id, ctx.author.id)
+            await ctx.send(embed=discord.Embed(description=f"{ctx.author.id}, Por favor! Execute o comando novamente. Ocorreu um erro! Aparentemente você não estava configurado na minha database. Mas agora está!", color=0xef0027))
+            return False
+
+        if check.bot(ctx.guild.id, self.client.user.id) == False:
+            bot.create(ctx.guild.id, self.client.user.id)
+            await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, Por favor! Execute o comando novamente. Ocorreu um erro!", color=0xef0027))
             return False
 
         if not guild.get_whitelist(ctx.guild.id) == ctx.channel.id and not guild.get_whitelist(ctx.guild.id) == 0 and not ctx.author.id == ctx.guild.owner.id:

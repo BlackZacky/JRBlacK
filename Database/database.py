@@ -304,11 +304,10 @@ class user:
         return ([x["Job"] for x in self.coll.find({"GuildID":GuildID, "MemberID":MemberID})])
 
 class bot:
-    def __init__(self, client):
+    def __init__(self):
         self.coll  = MongoClient(MONGOURL, retryWrites=False)["jrblack"]["bot"]
         self.tuple = namedtuple("database_bot", ["status", "text"])
         self.check = check()
-        self.client = client
 
     def create(self, GuildID:int, BotID:int):
         if self.check.bot(GuildID, BotID):
@@ -324,94 +323,16 @@ class bot:
         self.coll.insert(json)
         return True
 
-    def delete(self, GuildID:int, BotID:int):
+    def delete(self, GuildID:int):
         if not self.check.guild(GuildID):
             return False
         
-        return self.coll.delete({"GuildID": GuildID, "BotID": BotID})
+        return self.coll.delete({"GuildID": GuildID})
 
     def post_casanik(self, GuildID:int, BotID:int, Money:int):
         return self.coll.update_one({"GuildID": GuildID, "BotID": BotID}, {"$inc":{"Casanik.Money": Money}})
 
     def get_casanik(self, GuildID:int, BotID:int):
-        return ([x["Casanik"]["Money"] for x in self.coll.find({"GuildID":GuildID, "BotID":BotID})])
+        return ([x["Casanik"]["Money"] for x in self.coll.find({"GuildID":GuildID, "BotID":BotID})])[0]
 
 print("Database: Conectado!")
-
-"""
-class Questions:
-    def __init__(self):
-        self.coll = MongoClient("mongodb://blackzacky:black12345@ds133659.mlab.com:33659/sapponnetwork", retryWrites=False)["sapponnetwork"]["Questions"]
-
-    def Check(self, Question):
-        for x in self.coll.find({"Question": Question}):
-            return True
-        return False
-
-    def Add(self, GuildID:int, MemberID:int, Question:str, Answer:str):
-
-        self.coll.insert({
-            "GuildID": GuildID,
-            "MemberID": MemberID,
-            "Question": Question,
-            "Answer": Answer
-       })
-
-class Store:
-    def __init__(self):
-        self.coll = MongoClient("mongodb://blackzacky:black12345@ds133659.mlab.com:33659/sapponnetwork", retryWrites=False)["sapponnetwork"]["Store"]
-
-    def Check(self, Store):
-        for x in self.coll.find({"Store": Store}):
-            return True
-        return False
-    
-    def Add(self, GuildID:int):
-        self.coll.insert({
-            "GuildID": GuildID,
-            "Backgrounds":{
-                "Background 1":{
-                    "Url":"https://i.imgur.com/nhEfmIY.jpg",
-                    "Price":10000
-                },
-                "Background 2":{
-                    "Url":"https://i.imgur.com/UM0icxL.jpg",
-                    "Price":12000
-                },
-                "Background 3":{
-                    "Url":"https://i.imgur.com/7Lg3aRy.jpg",
-                    "Price":13000
-                },
-                "Background 4":{
-                    "Url":"https://i.imgur.com/M1SEbiF.jpg",
-                    "Price":14000
-                },
-                "Background 5":{
-                    "Url":"https://i.imgur.com/8zNOkSC.jpg",
-                    "Price":16000
-                },
-                "Background 6":{
-                    "Url":"https://i.imgur.com/2ys3opI.jpg",
-                    "Price":17000
-                },
-                "Background 7":{
-                    "Url":"https://i.imgur.com/Vsob00Q.jpg",
-                    "Price":18000
-                },
-                "Background 8":{
-                    "Url":"https://i.imgur.com/aV6ssxS.jpg",
-                    "Price":19000
-                },
-                "Background 9":{
-                    "Url":"https://i.imgur.com/249EcCz.jpg",
-                    "Price":20000
-                },
-                "Background 10":{
-                    "Url":"https://i.imgur.com/8GxmCE8.jpg",
-                    "Price":5000
-                }
-            },
-            "Weapons":{
-                "Pistol":}
-        })
-"""
