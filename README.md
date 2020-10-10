@@ -1,7 +1,5 @@
 # JRBlacK
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 Este é o JRBlacK um bot feito para o discord. Ele conta com diversos sistemas, tais como Level e XP, Welcome, Logs, Economy, Funny e mais...
 
 ### Novidades!
