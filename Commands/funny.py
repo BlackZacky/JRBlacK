@@ -36,9 +36,9 @@ class MyFunny(commands.Cog, name="Diversão"):
         if self.user.get_money_hand(ctx.guild.id, member.id) <= 0:
             return await ctx.send(embed=discord.Embed(description=f"Kkkkk infelizmente você assaltou alguém que não tinha nada em mãos...", color=0xef0027))
             
-        x = self.user.get_money_hand(ctx.guild.id, member.id)
-        self.user.post_money_hand(ctx.guild.id, member.id, -x)
-        self.user.post_money_hand(ctx.guild.id, ctx.author.id, x)
+        money_hand = self.user.get_money_hand(ctx.guild.id, member.id)
+        self.user.post_money_hand(ctx.guild.id, member.id, -money_hand)
+        self.user.post_money_hand(ctx.guild.id, ctx.author.id, money_hand)
 
         frases = [f"Vish, me parece que o {member.mention} acabou de ser roubado...", f"Um vagabundo acabou de roubar o {member.mention}.",
                 f"Infelizmente o {member.mention} acabou de ser roubado...", f"Uma camera flagrou o vagabundo do {ctx.author.mention}, roubando o {member.mention}.",

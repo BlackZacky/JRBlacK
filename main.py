@@ -378,11 +378,11 @@ class MyCommand(commands.Cog, name="Command"):
         self.uptime = Uptime
 
     @client.check
-    async def globally_check_command(self, ctx):
-        check = database.check()
-        guild = database.guild()
-        user  = database.user()
-        bot   = database.bot()
+    async def globally_check_command(ctx):
+        check  = database.check()
+        guild  = database.guild()
+        user   = database.user()
+        bot    = database.bot()
 
         if check.guild(ctx.guild.id) == False:
             guild.create(ctx.guild.id, ctx.guild.owner.id)
@@ -394,8 +394,8 @@ class MyCommand(commands.Cog, name="Command"):
             await ctx.send(embed=discord.Embed(description=f"{ctx.author.id}, Por favor! Execute o comando novamente. Ocorreu um erro! Aparentemente você não estava configurado na minha database. Mas agora está!", color=0xef0027))
             return False
 
-        if check.bot(ctx.guild.id, self.client.user.id) == False:
-            bot.create(ctx.guild.id, self.client.user.id)
+        if check.bot(ctx.guild.id, BOTID) == False:
+            bot.create(ctx.guild.id, BOTID)
             await ctx.send(embed=discord.Embed(description=f"{ctx.guild.owner}, Por favor! Execute o comando novamente. Ocorreu um erro!", color=0xef0027))
             return False
 
@@ -454,4 +454,4 @@ client.add_listener(MyClient(client).on_message_edit)
 client.add_listener(MyClient(client).on_voice_state_update)
 
 loop_status.start()
-client.run(TOKEN, bot=True, reconnect=True)
+client.run(TOKEN, bot=True)

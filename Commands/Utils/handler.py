@@ -22,11 +22,11 @@ class MyHandler(commands.Cog, name="Handler Error"):
         if isinstance(error, commands.UserInputError):
             await ctx.send(f"```asciidoc\nInput :: Entrada inválida```")
             
-            commandUsage = self.bot.get_command(ctx.command.name).usage
-            if commandUsage is None:
-                commandUsage = "Este comando não possui um tutorial de uso."
+            command_usage = self.bot.get_command(ctx.command.name).usage
+            if command_usage is None:
+                command_usage = "Este comando não possui um tutorial de uso."
             
-            return await ctx.send(f"""```asciidoc\n[Comando {ctx.command.name}]\n Modo de uso    :: {commandUsage}```""")
+            return await ctx.send(f"""```asciidoc\n[Comando {ctx.command.name}]\n Modo de uso    :: {command_usage}```""")
 
         if isinstance(error, commands.NoPrivateMessage):
             try:
