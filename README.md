@@ -4,8 +4,8 @@ Este é o JRBlacK um bot feito para o discord. Ele conta com diversos sistemas, 
 
 ### Novidades!
 
-  - Módulo: hacking | checks
-  - Comandos: nmap | whois
+  - Módulo: funny
+  - Comandos: roubar | caça-niquel | sorteio | diz
   - Código: Otimizado!
 
 Está nova atualização conta com dois módulos novos e três novos comandos, sendo que um é sub_comando do `nmap`.
