@@ -75,11 +75,7 @@ Eu utilizo algumas bibliotecas para facilitar o desenvolvimento e melhorar a exp
 
 Quer contribuir? Ótimo!
 
-Me chame nas minhas redes sociais:
-- Discord: blkz#0001
-- Instagram: blkz.y
-
-Caso não queira chamar, basta mandar um pull requests que irei analisar o código.
+Basta mandar um pull requests que irei analisar o código.
 
 License
 ----
