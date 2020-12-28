@@ -2,14 +2,6 @@
 
 Este é o JRBlacK um bot feito para o discord. Ele conta com diversos sistemas, tais como Level e XP, Welcome, Logs, Economy, Funny e mais...
 
-### Novidades!
-
-  - Módulo: funny
-  - Comandos: roubar | caça-niquel | sorteio | diz
-  - Código: Otimizado!
-
-Está nova atualização conta com dois módulos novos e três novos comandos, sendo que um é sub_comando do `nmap`.
-
 ### Configuração & Instalação
 
 JrBlack requer [Python3](https://python.org/) v3.6.6+ para poder rodar o bot perfeitamente.
