@@ -1,89 +1,32 @@
-# JRBlacK
-
-Este é o JRBlacK um bot feito para o discord. Ele conta com diversos sistemas, tais como Level e XP, Welcome, Logs, Economy, Funny e mais...
-
-### Configuração & Instalação
-
-JrBlack requer [Python3](https://python.org/) v3.6.6+ para poder rodar o bot perfeitamente.
-
-#### **Etapa 1:** Baixando código e dependências
-```sh
-$ git clone https://github.com/blkzy/JRBlacK
-$ cd JRBlacK
-$ python3 -m pip install -r requirements.txt
-$ sudo apt-get install nmap # Isso no caso do seu sistema ser baseado no Debian ou Ubuntu.
-```
-
-#### **Etapa 2:** Database
-O JRBlacK Utiliza banco de dados NoSQL ou melhor... MongoDB.
-Estarei disponibilizando a baixo um site que disponibiliza essas database gratuitamente.
-Caso não tenha muita familiaridade com MongoDB, basta procurar algum tutorial/curso no youtube que você irá entender perfeitamente o funcionamento e como utilizar o database NoSQL.
-
-- MongoDB Atlas: https://www.mongodb.com/cloud/atlas
-
-#### **Etapa 3:** Icon's
-Sim! O bot tem sistema de icone personalizado...
-Mas um pequeno probleminha que esse tipo de coisa faz é a falta de paciência para colocar todos os iconês.
-Para que você consiga colocar todos os iconês, basta você criar alguns grupos. Acho que na faixa de uns 5 (até o momento).
-
-- Icons8: https://icons8.com/icon/new-icons/color
-
-#### **Etapa 4:** Api's necessárias
-O bot utiliza de algumas API's para funcionar alguns comandos. Tais como: `news` e `film`.
-Para ter acesso as Key's dessas api basta você entrar nos links abaixo e se cadastrar nos sites, que ele irá te fornecer a Key.
-Com as Key's em mãos basta ir no arquivo [Database/__init__.py](https://github.com/BlackZacky/JRBlacK-BOT/blob/master/Database/__init__.py), e colocar as key's lá!
-
-- OMDbApi: https://www.omdbapi.com/
-- NewsApi: https://newsapi.org/
-- Weather: https://openweathermap.org/api
-
-#### **Etapa Final:** inicie o bot
-
-```sh
-$ python3 main.py
-```
-
-### Bibliotecas
-
-Eu utilizo algumas bibliotecas para facilitar o desenvolvimento e melhorar a experiência.
-
-| Bibliotecas | Link's |
-| ------ | ------ |
-| discord py | [pypi][url_discordpy] |
-| aiohttp | [pypi][url_aiohttp] |
-| datetime | [docs][url_datetime] |
-| pymongo | [pypi][url_pymongo] |
-| psutil | [pypi][url_psutil] |
-| pillow | [pypi][url_pillow] |
-| wikipedia | [pypi][url_wikipedia] |
-| humanize | [pypi][url_humanize] |
-| beautifulsoup4 | [pypi][url_beautifulsoup4] |
-| discord-ext-menus | [github][url_discord_ext_menus] |
-| newsapi-python | [pypi][url_newsapi_python] |
-| python-whois | [pypi][url_python_whois] |
+##### The bot features a number of features such as games, memes, server administration commands, and much more. It is highly customizable.
 
 
-### Desenvolvimento
+#### Python Settings <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/python/white"><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/python/black"><img src="https://cdn.simpleicons.org/python/black" alt="MongoDB" align=left width=18 height=18></picture>
+###### [Python v3.6.6+](https://python.org/)
 
-Quer contribuir? Ótimo!
 
-Basta mandar um pull requests que irei analisar o código.
+#### MongoDB Settings <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/mongodb/white"><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/mongodb/black"><img src="https://cdn.simpleicons.org/mongodb/black" alt="MongoDB" align=left width=18 height=18></picture>
+###### JRBlacK uses a NoSQL database to store information. More specifically, it uses MongoDB as its default database.
+###### To use MongoDB with JRBlacK, the developer needs to configure the database access credentials in the bot's configuration file. There are several ways to get a MongoDB database, one of them being through cloud providers that offer free instances for developers, like MongoDB Atlas.
 
-License
-----
-MIT
+###### [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 
-**Software livre, claro que sim!!**
 
-  [url_discordpy]: <https://pypi.org/project/discord.py/>
-  [url_aiohttp]: <https://pypi.org/project/aiohttp/>
-  [url_datetime]: <https://docs.python.org/3/library/datetime.html>
-  [url_pymongo]: <https://pypi.org/project/pymongo/>
-  [url_psutil]: <https://pypi.org/project/psutil/>
-  [url_pillow]: <https://pypi.org/project/Pillow/>
-  [url_wikipedia]: <https://pypi.org/project/wikipedia/>
-  [url_humanize]: <https://pypi.org/project/humanize/>
-  [url_beautifulsoup4]: <https://pypi.org/project/beautifulsoup4/>
-  [url_discord_ext_menus]: <https://github.com/Rapptz/discord-ext-menus>
-  [url_newsapi_python]: <https://pypi.org/project/newsapi-python/>
-  [url_python_whois]: <https://pypi.org/project/python-whois/>
+#### Icon Settings <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/icons8/white"><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/icons8/black"><img src="https://cdn.simpleicons.org/icons8/black" alt="Icons8" align=left width=18 height=18></picture>
+###### JRBlacK has a custom icon system, which allows developers to define custom icons for different bot commands and functionality.
+###### However, a common challenge when customizing icons is the lack of patience to add each one individually. To make the process easier, the bot developer recommends creating a few groups of icons, about five groups.
+
+###### [Icons8](https://icons8.com/icon/new-icons/color)
+
+
+#### Api Settings <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/fastapi/white"><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/fastapi/black"><img src="https://cdn.simpleicons.org/fastapi/black" alt="FastAPI" align=left width=18 height=18></picture>
+###### The bot uses APIs to run certain commands, such as the "news" and "film" commands. In order to access the API keys, it is necessary to register on the websites corresponding to the APIs.
+###### Below are the links where you can get access to the keys of each api. After obtaining the keys, it is necessary to place them in the bot's "Database/\_\_init\_\_.py" file, so that it can use them correctly.
+
+###### [OMDbApi](https://www.omdbapi.com/)
+###### [NewsApi](https://newsapi.org/)
+###### [WeatherApi](https://openweathermap.org/api)
+
+
+#### License <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/opensourceinitiative/white"><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/opensourceinitiative/black"><img src="https://cdn.simpleicons.org/opensourceinitiative/black" alt="Icons8" align=left width=18 height=18></picture>
+###### MIT
